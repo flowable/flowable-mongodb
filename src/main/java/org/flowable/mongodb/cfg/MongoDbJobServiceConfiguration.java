@@ -14,6 +14,7 @@ package org.flowable.mongodb.cfg;
 
 import org.flowable.job.service.JobServiceConfiguration;
 import org.flowable.mongodb.persistence.MongoDbSessionFactory;
+import org.flowable.mongodb.persistence.manager.MongoDbJobByteArrayDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbTimerJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDeadLetterJobDataManager;
@@ -23,9 +24,9 @@ import org.flowable.mongodb.persistence.manager.MongoSuspendedJobDataManager;
  * @author Joram Barrez
  */
 public class MongoDbJobServiceConfiguration extends JobServiceConfiguration {
-    
+
     protected MongoDbSessionFactory mongoDbSessionFactory;
-    
+
     @Override
     public void initDataManagers() {
         // TODO: other data managers
@@ -48,6 +49,12 @@ public class MongoDbJobServiceConfiguration extends JobServiceConfiguration {
             MongoDeadLetterJobDataManager mongoDeadLetterJobDataManager = new MongoDeadLetterJobDataManager();
             mongoDbSessionFactory.registerDataManager(MongoDeadLetterJobDataManager.COLLECTION_DEADLETTER_JOBS, mongoDeadLetterJobDataManager);
             deadLetterJobDataManager = mongoDeadLetterJobDataManager;
+        }
+
+        if (jobByteArrayDataManager == null) {
+            MongoDbJobByteArrayDataManager mongoDbJobByteArrayDataManager = new MongoDbJobByteArrayDataManager();
+            mongoDbSessionFactory.registerDataManager(MongoDbJobByteArrayDataManager.COLLECTION_JOB_BYTE_ARRAY, mongoDbJobByteArrayDataManager);
+            jobByteArrayDataManager = mongoDbJobByteArrayDataManager;
         }
     }
 

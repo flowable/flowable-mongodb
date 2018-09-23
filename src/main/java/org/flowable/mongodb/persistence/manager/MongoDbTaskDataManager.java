@@ -33,9 +33,9 @@ import com.mongodb.client.model.Sorts;
  * @author Joram Barrez
  */
 public class MongoDbTaskDataManager extends AbstractMongoDbDataManager<TaskEntity> implements TaskDataManager {
-    
+
     public static final String COLLECTION_TASKS = "tasks";
-    
+
     @Override
     public String getCollection() {
         return COLLECTION_TASKS;
@@ -87,7 +87,7 @@ public class MongoDbTaskDataManager extends AbstractMongoDbDataManager<TaskEntit
         Bson filter = createFilter(taskQuery);
         return getMongoDbSession().count(COLLECTION_TASKS, filter);
     }
-    
+
     @Override
     public List<Task> findTasksWithRelatedEntitiesByQueryCriteria(TaskQueryImpl taskQuery) {
         throw new UnsupportedOperationException();
@@ -110,12 +110,12 @@ public class MongoDbTaskDataManager extends AbstractMongoDbDataManager<TaskEntit
 
     @Override
     public void updateTaskTenantIdForDeployment(String deploymentId, String newTenantId) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void updateAllTaskRelatedEntityCountFlags(boolean newValue) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -126,37 +126,37 @@ public class MongoDbTaskDataManager extends AbstractMongoDbDataManager<TaskEntit
             getMongoDbSession().delete(COLLECTION_TASKS, taskEntity);
         }
     }
-    
+
     protected Bson createFilter(TaskQueryImpl taskQuery) {
         List<Bson> andFilters = new ArrayList<>();
         if (taskQuery.getExecutionId() != null) {
             andFilters.add(Filters.eq("executionId", taskQuery.getExecutionId()));
         }
-        
+
         if (taskQuery.getProcessInstanceId() != null) {
             andFilters.add(Filters.eq("processInstanceId", taskQuery.getProcessInstanceId()));
         }
-        
+
         if (taskQuery.getAssignee() != null) {
             andFilters.add(Filters.eq("assignee", taskQuery.getAssignee()));
         }
-        
+
         if (taskQuery.getUnassigned()) {
             andFilters.add(Filters.eq("assignee", null));
         }
-        
+
         if (taskQuery.getName() != null) {
             andFilters.add(Filters.eq("name", taskQuery.getName()));
         }
-        
+
         Bson filter = null;
         if (andFilters.size() > 0) {
             filter = Filters.and(andFilters.toArray(new Bson[andFilters.size()]));
         }
-        
+
         return filter;
     }
-    
+
     protected Bson createSort(TaskQueryImpl taskQuery) {
         List<Bson> bsonSorts = new ArrayList<>();
         for (String column : taskQuery.getOrderByColumnMap().keySet()) {
@@ -165,7 +165,7 @@ public class MongoDbTaskDataManager extends AbstractMongoDbDataManager<TaskEntit
             if (TaskQueryProperty.NAME.getName().equals(column)) {
                 columnName = "name";
             }
-            
+
             if (columnName != null) {
                 if (isAscending) {
                     bsonSorts.add(Sorts.ascending(columnName));
@@ -174,12 +174,12 @@ public class MongoDbTaskDataManager extends AbstractMongoDbDataManager<TaskEntit
                 }
             }
         }
-        
+
         Bson bsonSortResult = null;
         if (bsonSorts.size() > 0) {
             bsonSortResult = Sorts.orderBy(bsonSorts);
         }
-        
+
         return bsonSortResult;
     }
 }

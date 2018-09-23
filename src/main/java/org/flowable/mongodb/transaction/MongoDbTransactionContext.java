@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.ibatis.session.SqlSession;
 import org.flowable.common.engine.impl.cfg.TransactionContext;
 import org.flowable.common.engine.impl.cfg.TransactionListener;
 import org.flowable.common.engine.impl.cfg.TransactionPropagation;
@@ -51,7 +50,7 @@ public class MongoDbTransactionContext implements TransactionContext {
         LOGGER.debug("firing event committing...");
         fireTransactionEvent(TransactionState.COMMITTING, false);
 
-        LOGGER.debug("committing the ibatis sql session...");
+        LOGGER.debug("committing transaction...");
         mongoDbSession.getClientSession().commitTransaction();
         LOGGER.debug("firing event committed...");
         fireTransactionEvent(TransactionState.COMMITTED, true);
@@ -73,16 +72,6 @@ public class MongoDbTransactionContext implements TransactionContext {
         transactionListeners.add(transactionListener);
     }
 
-    /**
-     * Fires the event for the provided {@link TransactionState}.
-     * 
-     * @param transactionState
-     *            The {@link TransactionState} for which the listeners will be called.
-     * @param executeInNewContext
-     *            If true, the listeners will be called in a new command context. This is needed for example when firing the {@link TransactionState#COMMITTED} event: the transaction is already
-     *            committed and executing logic in the same context could lead to strange behaviour (for example doing a {@link SqlSession#update(String)} would actually roll back the update (as the
-     *            MyBatis context is already committed and the internal flags have not been correctly set).
-     */
     protected void fireTransactionEvent(TransactionState transactionState, boolean executeInNewContext) {
         if (stateTransactionListeners == null) {
             return;

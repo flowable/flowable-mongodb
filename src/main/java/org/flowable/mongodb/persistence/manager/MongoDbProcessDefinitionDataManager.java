@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,15 @@ package org.flowable.mongodb.persistence.manager;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.Document;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.engine.impl.ProcessDefinitionQueryImpl;
 import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.flowable.engine.impl.persistence.entity.data.ProcessDefinitionDataManager;
 import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 
@@ -32,9 +31,13 @@ import com.mongodb.client.model.Sorts;
  * @author Joram Barrez
  */
 public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataManager<ProcessDefinitionEntity> implements ProcessDefinitionDataManager {
-    
+
     public static final String COLLECTION_PROCESS_DEFINITIONS = "processDefinitions";
-    
+
+    public MongoDbProcessDefinitionDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
+
     @Override
     public String getCollection() {
         return COLLECTION_PROCESS_DEFINITIONS;
@@ -44,7 +47,7 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
     public ProcessDefinitionEntity create() {
         return new ProcessDefinitionEntityImpl();
     }
-    
+
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
@@ -74,7 +77,7 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public void deleteProcessDefinitionsByDeploymentId(String deploymentId) {
-        getMongoDbSession().getCollection(COLLECTION_PROCESS_DEFINITIONS).deleteMany(Filters.eq("deploymentId", deploymentId));
+        getMongoDbSession().bulkDelete(COLLECTION_PROCESS_DEFINITIONS, Filters.eq("deploymentId", deploymentId));
     }
 
     @Override
@@ -121,7 +124,7 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public void updateProcessDefinitionTenantIdForDeployment(String deploymentId, String newTenantId) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
-    
+
 }

@@ -15,6 +15,7 @@ package org.flowable.mongodb.persistence.manager;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.engine.impl.persistence.entity.ProcessDefinitionInfoEntity;
 import org.flowable.engine.impl.persistence.entity.data.ProcessDefinitionInfoDataManager;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
 
@@ -22,19 +23,23 @@ import com.mongodb.BasicDBObject;
  * @author Joram Barrez
  */
 public class MongoDbProcessDefinitionInfoDataManager extends AbstractMongoDbDataManager<ProcessDefinitionInfoEntity> implements ProcessDefinitionInfoDataManager {
-    
+
     public static final String COLLECTION_PROCESS_DEFINITION_INFO = "processDefinitionInfo";
+
+    public MongoDbProcessDefinitionInfoDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
 
     @Override
     public String getCollection() {
         return COLLECTION_PROCESS_DEFINITION_INFO;
     }
-    
+
     @Override
     public ProcessDefinitionInfoEntity create() {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;

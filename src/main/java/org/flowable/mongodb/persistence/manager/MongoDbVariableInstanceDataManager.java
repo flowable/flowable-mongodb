@@ -32,12 +32,12 @@ import com.mongodb.client.model.Filters;
  * @author Joram Barrez
  */
 public class MongoDbVariableInstanceDataManager extends AbstractMongoDbDataManager<VariableInstanceEntity> implements VariableInstanceDataManager {
-    
+
     public static final String COLLECTION_VARIABLES = "variables";
-    
-    protected CachedEntityMatcher<Entity> variableInstanceByExecutionIdMatcher = 
+
+    protected CachedEntityMatcher<Entity> variableInstanceByExecutionIdMatcher =
             (CachedEntityMatcher) new VariableInstanceByExecutionIdMatcher();
-    
+
     @Override
     public String getCollection() {
         return COLLECTION_VARIABLES;
@@ -72,7 +72,7 @@ public class MongoDbVariableInstanceDataManager extends AbstractMongoDbDataManag
 
     @Override
     public List<VariableInstanceEntity> findVariableInstancesByExecutionId(String executionId) {
-        return getMongoDbSession().find(COLLECTION_VARIABLES, Filters.eq("executionId", executionId), executionId, 
+        return getMongoDbSession().find(COLLECTION_VARIABLES, Filters.eq("executionId", executionId), executionId,
                 VariableInstanceEntityImpl.class, variableInstanceByExecutionIdMatcher, true);
     }
 
@@ -111,7 +111,7 @@ public class MongoDbVariableInstanceDataManager extends AbstractMongoDbDataManag
 
     @Override
     public VariableInstanceEntity findVariableInstanceByScopeIdAndScopeTypeAndName(String scopeId, String scopeType, String variableName) {
-        Bson filter = Filters.and(Filters.eq("scopeId", scopeId), Filters.eq("scopeType", scopeType), 
+        Bson filter = Filters.and(Filters.eq("scopeId", scopeId), Filters.eq("scopeType", scopeType),
                 Filters.eq("name", variableName));
         return getMongoDbSession().findOne(COLLECTION_VARIABLES, filter);
     }
@@ -142,7 +142,7 @@ public class MongoDbVariableInstanceDataManager extends AbstractMongoDbDataManag
 
     @Override
     public void deleteVariablesByTaskId(String taskId) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -157,9 +157,9 @@ public class MongoDbVariableInstanceDataManager extends AbstractMongoDbDataManag
 
     @Override
     public void deleteByScopeIdAndScopeType(String scopeId, String scopeType) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
-    
+
     public VariableInstanceEntityImpl transformToEntity(Document document) {
         throw new UnsupportedOperationException();
     }

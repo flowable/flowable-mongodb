@@ -26,14 +26,14 @@ import com.mongodb.client.model.Filters;
  * @author Joram Barrez
  */
 public class MongoDbIdentityLinkDataManager extends AbstractMongoDbDataManager<IdentityLinkEntity> implements IdentityLinkDataManager {
-    
+
     public static String COLLECTION_IDENTITY_LINKS = "identityLinks";
 
     @Override
     public String getCollection() {
         return COLLECTION_IDENTITY_LINKS;
     }
-    
+
     @Override
     public IdentityLinkEntity create() {
         return new IdentityLinkEntityImpl();
@@ -100,12 +100,12 @@ public class MongoDbIdentityLinkDataManager extends AbstractMongoDbDataManager<I
 
     @Override
     public void deleteIdentityLinksByTaskId(String taskId) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteIdentityLinksByProcDef(String processDefinitionId) {
-        getMongoDbSession().getCollection(COLLECTION_IDENTITY_LINKS).deleteMany(Filters.eq("processDefinitionId", processDefinitionId));
+        getMongoDbSession().bulkDelete(COLLECTION_IDENTITY_LINKS, Filters.eq("processDefinitionId", processDefinitionId));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class MongoDbIdentityLinkDataManager extends AbstractMongoDbDataManager<I
 
     @Override
     public void deleteIdentityLinksByScopeIdAndScopeType(String scopeId, String scopeType) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
-    
+
 }

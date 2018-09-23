@@ -19,6 +19,7 @@ import java.util.List;
 import org.bson.conversions.Bson;
 import org.flowable.common.engine.impl.Page;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
+import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.job.api.Job;
 import org.flowable.job.service.JobServiceConfiguration;
 import org.flowable.job.service.impl.JobQueryImpl;
@@ -35,22 +36,18 @@ import com.mongodb.client.model.Filters;
 public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity> implements JobDataManager {
 
     public static final String COLLECTION_JOBS = "jobs";
-    
+
     protected JobServiceConfiguration jobServiceConfiguration;
-    
-    public MongoDbJobDataManager() {
-        
-    }
-    
+
     public MongoDbJobDataManager(JobServiceConfiguration jobServiceConfiguration) {
         this.jobServiceConfiguration = jobServiceConfiguration;
     }
-    
+
     @Override
     public String getCollection() {
         return COLLECTION_JOBS;
     }
-    
+
     @Override
     public JobEntity create() {
         return new JobEntityImpl();
@@ -72,11 +69,11 @@ public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity>
         Bson filter = null;
         if (jobServiceConfiguration.getJobExecutionScope() == null) {
             filter = Filters.and(Filters.eq("scopeType", null), Filters.eq("lockExpirationTime", null));
-            
+
         } else if (!jobServiceConfiguration.getJobExecutionScope().equals("all")){
-            filter = Filters.and(Filters.eq("scopeType", jobServiceConfiguration.getJobExecutionScope()), 
+            filter = Filters.and(Filters.eq("scopeType", jobServiceConfiguration.getJobExecutionScope()),
                     Filters.eq("lockExpirationTime", null));
-            
+
         } else {
             filter = Filters.eq("lockExpirationTime", null);
         }
@@ -100,18 +97,18 @@ public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity>
         Bson filter = null;
         if (jobServiceConfiguration.getJobExecutionScope() == null) {
             filter = Filters.eq("scopeType", null);
-            
+
         } else if (!jobServiceConfiguration.getJobExecutionScope().equals("all")){
             filter = Filters.eq("scopeType", jobServiceConfiguration.getJobExecutionScope());
-            
+
         }
-        
+
         Date now = jobServiceConfiguration.getClock().getCurrentTime();
         Date maxTimeout = new Date(now.getTime() - jobServiceConfiguration.getAsyncExecutorResetExpiredJobsMaxTimeout());
-        
-        filter = Filters.and(filter, Filters.or(Filters.lt("lockExpirationTime", now), 
+
+        filter = Filters.and(filter, Filters.or(Filters.lt("lockExpirationTime", now),
                 Filters.and(Filters.eq("lockExpirationTime", null), Filters.lt("createTime", maxTimeout))));
-        
+
         return getMongoDbSession().find(COLLECTION_JOBS, filter, null, 1);
     }
 
@@ -127,41 +124,76 @@ public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity>
 
     @Override
     public List<Job> findJobsByQueryCriteria(JobQueryImpl jobQuery) {
-        List<Bson> andFilters = new ArrayList<>();
-        if (jobQuery.getExecutionId() != null) {
-            andFilters.add(Filters.eq("executionId", jobQuery.getExecutionId()));
-        }
-        
-        if (jobQuery.getProcessInstanceId() != null) {
-            andFilters.add(Filters.eq("processInstanceId", jobQuery.getProcessInstanceId()));
-        }
-        
-        Bson filter = null;
-        if (andFilters.size() > 0) {
-            filter = Filters.and(andFilters.toArray(new Bson[andFilters.size()]));
-        }
-        
-        return getMongoDbSession().find(COLLECTION_JOBS, filter);
+        List<Job> jobs = getMongoDbSession().find(COLLECTION_JOBS, createFilter(jobQuery));
+        return jobs;
     }
 
     @Override
     public long findJobCountByQueryCriteria(JobQueryImpl jobQuery) {
-        List<Bson> andFilters = new ArrayList<>();
-        if (jobQuery.getExecutionId() != null) {
-            andFilters.add(Filters.eq("executionId", jobQuery.getExecutionId()));
-        }
-        
-        if (jobQuery.getProcessInstanceId() != null) {
-            andFilters.add(Filters.eq("processInstanceId", jobQuery.getProcessInstanceId()));
-        }
-        
-        Bson filter = null;
-        if (andFilters.size() > 0) {
-            filter = Filters.and(andFilters.toArray(new Bson[andFilters.size()]));
-        }
-        
-        return getMongoDbSession().count(COLLECTION_JOBS, filter);
+        long count = getMongoDbSession().count(COLLECTION_JOBS, createFilter(jobQuery));
+        return count;
     }
+
+    protected Bson createFilter(JobQueryImpl query) {
+        List<Bson> filters = new ArrayList<>();
+        if (query.getId() != null) {
+            filters.add(Filters.eq("_id", query.getId()));
+        }
+        if (query.getExecutionId() != null) {
+            filters.add(Filters.eq("executionId", query.getExecutionId()));
+        }
+        if (query.getProcessInstanceId() != null) {
+            filters.add(Filters.eq("processInstanceId", query.getProcessInstanceId()));
+        }
+        if (query.getHandlerType() != null) {
+            filters.add(Filters.eq("jobHandlerType", query.getHandlerType()));
+        }
+        if (query.getProcessDefinitionId() != null) {
+            filters.add(Filters.eq("processDefinitionId", query.getProcessDefinitionId()));
+        }
+        if (query.getScopeId() != null) {
+            filters.add(Filters.eq("scopeId", query.getScopeId()));
+        }
+        if (query.getSubScopeId() != null) {
+            filters.add(Filters.eq("subScopeId", query.getSubScopeId()));
+        }
+        if (query.getScopeType() != null) {
+            filters.add(Filters.eq("scopeType", query.getSubScopeId()));
+        }
+        if (query.getScopeDefinitionId() != null) {
+            filters.add(Filters.eq("scopeDefinitionId", query.getScopeDefinitionId()));
+        }
+        if (query.getDuedateHigherThan() != null) {
+            filters.add(Filters.gt("duedate", query.getDuedateHigherThan()));
+        }
+        if (query.getDuedateLowerThan() != null) {
+            filters.add(Filters.gt("duedate", query.getDuedateLowerThan()));
+        }
+        if (query.getDuedateHigherThanOrEqual() != null) {
+            filters.add(Filters.gt("duedate", query.getDuedateHigherThanOrEqual()));
+        }
+        if (query.getDuedateLowerThanOrEqual() != null) {
+            filters.add(Filters.gt("duedate", query.getDuedateLowerThanOrEqual()));
+        }
+        if (query.isWithException()) {
+            throw new UnsupportedOperationException();
+        }
+        if (query.getExceptionMessage() != null) {
+            filters.add(Filters.eq("exceptionMessage", query.getExceptionMessage()));
+        }
+        if (query.getTenantId() != null) {
+            filters.add(Filters.eq("tenantId", query.getTenantId()));
+        }
+        if (query.getTenantIdLike() != null) {
+            filters.add(Filters.regex("tenantId", query.getTenantIdLike().replace("%", ".*")));
+        }
+        if (query.isWithoutTenantId()) {
+            filters.add(Filters.or(Filters.eq("tenantId", ProcessEngineConfiguration.NO_TENANT_ID), Filters.not(Filters.exists("tenantId"))));
+        }
+
+        return makeAndFilter(filters);
+    }
+
 
     @Override
     public void deleteJobsByExecutionId(String executionId) {

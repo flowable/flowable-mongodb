@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.engine.impl.persistence.entity.ResourceEntity;
 import org.flowable.engine.impl.persistence.entity.ResourceEntityImpl;
 import org.flowable.engine.impl.persistence.entity.data.ResourceDataManager;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
@@ -26,9 +27,13 @@ import com.mongodb.client.model.Filters;
  * @author Joram Barrez
  */
 public class MongoDbResourceDataManager extends AbstractMongoDbDataManager<ResourceEntity> implements ResourceDataManager {
-    
+
     public static final String COLLECTION_BYTE_ARRAY = "byteArrays";
-    
+
+    public MongoDbResourceDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
+
     @Override
     public String getCollection() {
         return COLLECTION_BYTE_ARRAY;
@@ -38,7 +43,7 @@ public class MongoDbResourceDataManager extends AbstractMongoDbDataManager<Resou
     public ResourceEntity create() {
         return new ResourceEntityImpl();
     }
-    
+
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
@@ -46,7 +51,7 @@ public class MongoDbResourceDataManager extends AbstractMongoDbDataManager<Resou
 
     @Override
     public void deleteResourcesByDeploymentId(String deploymentId) {
-        getMongoDbSession().getCollection(COLLECTION_BYTE_ARRAY).deleteMany(Filters.eq("deploymentId", deploymentId));
+        getMongoDbSession().bulkDelete(COLLECTION_BYTE_ARRAY, Filters.eq("deploymentId", deploymentId));
     }
 
     @Override

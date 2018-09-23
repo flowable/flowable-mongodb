@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.engine.ProcessEngineConfiguration;
@@ -24,6 +23,7 @@ import org.flowable.engine.impl.ModelQueryImpl;
 import org.flowable.engine.impl.persistence.entity.ModelEntity;
 import org.flowable.engine.impl.persistence.entity.data.ModelDataManager;
 import org.flowable.engine.repository.Model;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 import org.flowable.mongodb.persistence.entity.MongoDbModelEntityImpl;
 
 import com.mongodb.BasicDBObject;
@@ -36,6 +36,10 @@ import com.mongodb.client.model.Sorts;
 public class MongoDbModelDataManager extends AbstractMongoDbDataManager<ModelEntity> implements ModelDataManager {
 
     public static final String COLLECTION_MODELS = "models";
+
+    public MongoDbModelDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
 
     @Override
     public String getCollection() {

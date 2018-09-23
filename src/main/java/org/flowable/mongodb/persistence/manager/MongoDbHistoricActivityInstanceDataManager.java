@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import org.flowable.engine.impl.HistoricActivityInstanceQueryImpl;
 import org.flowable.engine.impl.persistence.entity.HistoricActivityInstanceEntity;
 import org.flowable.engine.impl.persistence.entity.HistoricActivityInstanceEntityImpl;
 import org.flowable.engine.impl.persistence.entity.data.HistoricActivityInstanceDataManager;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
@@ -33,19 +34,23 @@ import com.mongodb.client.model.Filters;
  * @author Joram Barrez
  */
 public class MongoDbHistoricActivityInstanceDataManager extends AbstractMongoDbDataManager<HistoricActivityInstanceEntity> implements HistoricActivityInstanceDataManager {
-    
+
     public static final String COLLECTION_HISTORIC_ACTIVITY_INSTANCES = "historicActivityInstances";
+
+    public MongoDbHistoricActivityInstanceDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
 
     @Override
     public String getCollection() {
         return COLLECTION_HISTORIC_ACTIVITY_INSTANCES;
     }
-    
+
     @Override
     public HistoricActivityInstanceEntity create() {
         return new HistoricActivityInstanceEntityImpl();
     }
-    
+
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
@@ -69,7 +74,7 @@ public class MongoDbHistoricActivityInstanceDataManager extends AbstractMongoDbD
 
     @Override
     public void deleteHistoricActivityInstancesByProcessInstanceId(String historicProcessInstanceId) {
-        getMongoDbSession().getCollection(COLLECTION_HISTORIC_ACTIVITY_INSTANCES).deleteMany(Filters.eq("processInstanceId", historicProcessInstanceId));
+        getMongoDbSession().bulkDelete(COLLECTION_HISTORIC_ACTIVITY_INSTANCES, Filters.eq("processInstanceId", historicProcessInstanceId));
     }
 
     @Override
@@ -91,21 +96,21 @@ public class MongoDbHistoricActivityInstanceDataManager extends AbstractMongoDbD
     public long findHistoricActivityInstanceCountByNativeQuery(Map<String, Object> parameterMap) {
         throw new UnsupportedOperationException();
     }
-    
+
     protected Bson createFilter(HistoricActivityInstanceQueryImpl activityInstanceQuery) {
         List<Bson> filters = new ArrayList<>();
         if (activityInstanceQuery.getExecutionId() != null) {
             filters.add(Filters.eq("executionId", activityInstanceQuery.getExecutionId()));
         }
-        
+
         if (activityInstanceQuery.getProcessInstanceId() != null) {
             filters.add(Filters.eq("processInstanceId", activityInstanceQuery.getProcessInstanceId()));
         }
-        
+
         if (activityInstanceQuery.getActivityId() != null) {
             filters.add(Filters.eq("activityId", activityInstanceQuery.getActivityId()));
         }
-        
+
         if (activityInstanceQuery.getActivityName() != null) {
             filters.add(Filters.eq("activityName", activityInstanceQuery.getActivityName()));
         }

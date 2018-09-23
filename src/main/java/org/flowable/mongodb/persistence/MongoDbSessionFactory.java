@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,6 +36,7 @@ import org.flowable.engine.impl.persistence.entity.ResourceEntityImpl;
 import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntityImpl;
 import org.flowable.identitylink.service.impl.persistence.entity.IdentityLinkEntityImpl;
+import org.flowable.job.service.impl.persistence.entity.JobByteArrayEntityImpl;
 import org.flowable.job.service.impl.persistence.entity.JobEntityImpl;
 import org.flowable.job.service.impl.persistence.entity.TimerJobEntityImpl;
 import org.flowable.mongodb.persistence.manager.AbstractMongoDbDataManager;
@@ -50,6 +51,7 @@ import org.flowable.mongodb.persistence.manager.MongoDbHistoricProcessInstanceDa
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricTaskInstanceDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricVariableInstanceDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbIdentityLinkDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbJobByteArrayDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbModelDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbProcessDefinitionDataManager;
@@ -68,6 +70,7 @@ import org.flowable.mongodb.persistence.mapper.HistoricProcessInstanceEntityMapp
 import org.flowable.mongodb.persistence.mapper.HistoricTaskInstanceEntityMapper;
 import org.flowable.mongodb.persistence.mapper.HistoricVariableInstanceEntityMapper;
 import org.flowable.mongodb.persistence.mapper.IdentityLinkEntityMapper;
+import org.flowable.mongodb.persistence.mapper.JobByteArrayEntityMapper;
 import org.flowable.mongodb.persistence.mapper.JobEntityMapper;
 import org.flowable.mongodb.persistence.mapper.ModelEntityMapper;
 import org.flowable.mongodb.persistence.mapper.ProcessDefinitionEntityMapper;
@@ -85,25 +88,25 @@ import com.mongodb.client.MongoDatabase;
 
 /**
  * @author Joram Barrez
- */ 
+ */
 public class MongoDbSessionFactory implements SessionFactory {
 
     protected MongoClient mongoClient;
     protected MongoDatabase mongoDatabase;
-    
+
     protected Map<Class<? extends Entity>, EntityToDocumentMapper<? extends Entity>> entityMappers = new HashMap<>();
     protected Map<Class<? extends Entity>, String> classToCollectionMap = new HashMap<>();
     protected Map<String, EntityToDocumentMapper<? extends Entity>> collectionToMapperMap = new HashMap<>();
     protected Map<String, Class<? extends Entity>> collectionToClassMap = new HashMap<>();
     protected Map<String, AbstractMongoDbDataManager> collectionToDataManager = new HashMap<>();
-    
+
     public MongoDbSessionFactory(MongoClient mongoClient, MongoDatabase mongoDatabase) {
         this.mongoClient = mongoClient;
         this.mongoDatabase = mongoDatabase;
-        
+
         initDefaultMappers();
     }
-    
+
     protected void initDefaultMappers() {
         registerEntityMapper(DeploymentEntityImpl.class, new DeploymentEntityMapper(), MongoDbDeploymentDataManager.COLLECTION_DEPLOYMENT);
         registerEntityMapper(ResourceEntityImpl.class, new ResourceEntityMapper(), MongoDbResourceDataManager.COLLECTION_BYTE_ARRAY);
@@ -118,9 +121,11 @@ public class MongoDbSessionFactory implements SessionFactory {
         registerEntityMapper(TaskEntityImpl.class, new TaskEntityMapper(), MongoDbTaskDataManager.COLLECTION_TASKS);
         registerEntityMapper(HistoricTaskInstanceEntityImpl.class, new HistoricTaskInstanceEntityMapper(), MongoDbHistoricTaskInstanceDataManager.COLLECTION_HISTORIC_TASK_INSTANCES);
         registerEntityMapper(VariableInstanceEntityImpl.class, new VariableInstanceEntityMapper(), MongoDbVariableInstanceDataManager.COLLECTION_VARIABLES);
+        registerEntityMapper(ModelEntityImpl.class, new ModelEntityMapper(), MongoDbModelDataManager.COLLECTION_MODELS);
+
         registerEntityMapper(JobEntityImpl.class, new JobEntityMapper(), MongoDbJobDataManager.COLLECTION_JOBS);
         registerEntityMapper(TimerJobEntityImpl.class, new TimerJobEntityMapper(), MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS);
-        registerEntityMapper(ModelEntityImpl.class, new ModelEntityMapper(), MongoDbModelDataManager.COLLECTION_MODELS);
+        registerEntityMapper(JobByteArrayEntityImpl.class,new JobByteArrayEntityMapper(), MongoDbJobByteArrayDataManager.COLLECTION_JOB_BYTE_ARRAY);
 
         registerEntityMapper(HistoricProcessInstanceEntityImpl.class, new HistoricProcessInstanceEntityMapper(), MongoDbHistoricProcessInstanceDataManager.COLLECTION_HISTORIC_PROCESS_INSTANCES);
         registerEntityMapper(HistoricActivityInstanceEntityImpl.class, new HistoricActivityInstanceEntityMapper(), MongoDbHistoricActivityInstanceDataManager.COLLECTION_HISTORIC_ACTIVITY_INSTANCES);
@@ -138,14 +143,14 @@ public class MongoDbSessionFactory implements SessionFactory {
     public Session openSession(CommandContext commandContext) {
         return new MongoDbSession(this, mongoClient, mongoDatabase, Context.getCommandContext().getSession(EntityCache.class));
     }
-    
+
     public void registerEntityMapper(Class<? extends Entity> clazz, EntityToDocumentMapper<? extends Entity> mapper, String collection) {
         entityMappers.put(clazz, mapper);
         classToCollectionMap.put(clazz, collection);
         collectionToClassMap.put(collection, clazz);
         collectionToMapperMap.put(collection, mapper);
     }
-    
+
     public void registerDataManager(String collection, AbstractMongoDbDataManager dataManager) {
         collectionToDataManager.put(collection, dataManager);
     }
@@ -165,11 +170,11 @@ public class MongoDbSessionFactory implements SessionFactory {
     public void setMongoDatabase(MongoDatabase mongoDatabase) {
         this.mongoDatabase = mongoDatabase;
     }
-    
+
     public Collection<String> getCollectionNames() {
         return classToCollectionMap.values();
     }
-    
+
     public String getCollectionForEntityClass(Class<? extends Entity> clazz) {
         return classToCollectionMap.get(clazz);
     }
@@ -181,7 +186,7 @@ public class MongoDbSessionFactory implements SessionFactory {
     public void setClassToCollectionsMap(Map<Class<? extends Entity>, String> collections) {
         this.classToCollectionMap = collections;
     }
-    
+
     public EntityToDocumentMapper<? extends Entity> getMapperForCollection(String collection) {
         return collectionToMapperMap.get(collection);
     }
@@ -193,15 +198,15 @@ public class MongoDbSessionFactory implements SessionFactory {
     public void setCollectionToMapper(Map<String, EntityToDocumentMapper<? extends Entity>> collectionToMapper) {
         this.collectionToMapperMap = collectionToMapper;
     }
-    
+
     public Class<? extends Entity> getClassForCollection(String collection) {
         return collectionToClassMap.get(collection);
     }
-    
+
     public AbstractMongoDbDataManager getDataManagerForCollection(String collection) {
         return collectionToDataManager.get(collection);
     }
-    
+
     public Map<String, Class<? extends Entity>> getCollectionToClass() {
         return collectionToClassMap;
     }
@@ -221,5 +226,5 @@ public class MongoDbSessionFactory implements SessionFactory {
     public void setEntityMappers(Map<Class<? extends Entity>, EntityToDocumentMapper<? extends Entity>> entityMappers) {
         this.entityMappers = entityMappers;
     }
-    
+
 }

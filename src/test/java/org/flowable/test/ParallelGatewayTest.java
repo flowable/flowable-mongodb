@@ -1,9 +1,9 @@
 /* Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -163,8 +163,7 @@ public class ParallelGatewayTest extends AbstractMongoDbTest {
     public void testAsyncBehavior() {
         repositoryService.createDeployment().addClasspathResource("org/flowable/test/ParallelGatewayTest.testAsyncBehavior.bpmn20.xml").deploy();
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("async");
-        JobTestHelper.waitForJobExecutorToProcessAllJobs(processEngineConfiguration, managementService, 5000L, 500L);
-        
+        JobTestHelper.waitForJobExecutorToProcessAllJobsAndTimerJobs(processEngineConfiguration, managementService, 10000L, 100L);
         assertEquals(0, runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getId()).count());
     }
 
@@ -172,14 +171,14 @@ public class ParallelGatewayTest extends AbstractMongoDbTest {
     public void testHistoricActivityInstanceEndTimes() {
         repositoryService.createDeployment().addClasspathResource("org/flowable/test/ParallelGatewayTest.testHistoricActivityInstanceEndTimes.bpmn20.xml").deploy();
         runtimeService.startProcessInstanceByKey("nestedForkJoin");
-        
+
         List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().list();
         assertEquals(21, historicActivityInstances.size());
         for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
             assertNotNull(historicActivityInstance.getStartTime());
             assertNotNull(historicActivityInstance.getEndTime());
         }
- 
+
     }
 
     @Test

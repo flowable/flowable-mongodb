@@ -20,6 +20,7 @@ import org.flowable.engine.impl.persistence.entity.CommentEntityImpl;
 import org.flowable.engine.impl.persistence.entity.data.CommentDataManager;
 import org.flowable.engine.task.Comment;
 import org.flowable.engine.task.Event;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
 
@@ -29,7 +30,11 @@ import com.mongodb.BasicDBObject;
 public class MongoDbCommentDataManager extends AbstractMongoDbDataManager<CommentEntity> implements CommentDataManager {
 
     public static final String COLLECTION_COMMENTS = "comments";
-    
+
+    public MongoDbCommentDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
+
     @Override
     public String getCollection() {
         return COLLECTION_COMMENTS;
@@ -39,7 +44,7 @@ public class MongoDbCommentDataManager extends AbstractMongoDbDataManager<Commen
     public CommentEntity create() {
         return new CommentEntityImpl();
     }
-    
+
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
@@ -78,13 +83,13 @@ public class MongoDbCommentDataManager extends AbstractMongoDbDataManager<Commen
     @Override
     public void deleteCommentsByTaskId(String taskId) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
     public void deleteCommentsByProcessInstanceId(String processInstanceId) {
         // TODO Auto-generated method stub
-        
+
     }
 
     @Override
@@ -110,6 +115,6 @@ public class MongoDbCommentDataManager extends AbstractMongoDbDataManager<Commen
         // TODO Auto-generated method stub
         return null;
     }
-    
-    
+
+
 }

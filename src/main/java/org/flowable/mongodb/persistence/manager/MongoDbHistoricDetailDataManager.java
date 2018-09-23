@@ -25,8 +25,8 @@ import org.flowable.engine.impl.persistence.entity.HistoricDetailVariableInstanc
 import org.flowable.engine.impl.persistence.entity.HistoricDetailVariableInstanceUpdateEntityImpl;
 import org.flowable.engine.impl.persistence.entity.HistoricFormPropertyEntity;
 import org.flowable.engine.impl.persistence.entity.HistoricFormPropertyEntityImpl;
-import org.flowable.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.flowable.engine.impl.persistence.entity.data.HistoricDetailDataManager;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
@@ -37,6 +37,10 @@ import com.mongodb.client.model.Filters;
 public class MongoDbHistoricDetailDataManager extends AbstractMongoDbDataManager<HistoricDetailEntity> implements HistoricDetailDataManager {
 
     public static final String COLLECTION_HISTORIC_DETAILS = "historicDetails";
+
+    public MongoDbHistoricDetailDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
 
     @Override
     public String getCollection() {

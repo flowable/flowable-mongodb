@@ -62,6 +62,7 @@ public class MongoDbSession implements Session {
     protected Map<Class<? extends Entity>, Map<String, Entity>> insertedObjects = new HashMap<>();
     protected Map<Class<? extends Entity>, Map<String, Entity>> deletedObjects = new HashMap<>();
     protected List<Entity> updatedObjects = new ArrayList<>();
+    protected Map<String, List<Bson>> bulkDeletes = new HashMap<>();
 
     public MongoDbSession(MongoDbSessionFactory mongoDbSessionFactory, MongoClient mongoClient, MongoDatabase mongoDatabase, EntityCache entityCache) {
         this.mongoDbSessionFactory = mongoDbSessionFactory;
@@ -167,18 +168,34 @@ public class MongoDbSession implements Session {
         }
         updatedObjects.clear();
     }
+
+    public UpdateResult updateImmediately(String collection, Bson filter, BasicDBObject updateDBObject) {
+        MongoCollection<Document> mongoDbCollection = getCollection(collection);
+        return mongoDbCollection.updateOne(filter, new Document().append("$set", updateDBObject));
+    }
     
     protected void flushDeletes() {
-        if (deletedObjects.size() == 0) {
-            return;
+
+        // Regular deletes
+        if (!deletedObjects.isEmpty()) {
+            for (Class<? extends Entity> clazz : deletedObjects.keySet()) {
+                MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(mongoDbSessionFactory.getClassToCollectionsMap().get(clazz));
+                Map<String, ? extends Entity> entities = deletedObjects.get(clazz);
+                for (Entity entity : entities.values()) {
+                    mongoDbCollection.deleteOne(clientSession, Filters.eq("_id", entity.getId()));
+                }
+            }
         }
-        
-        for (Class<? extends Entity> clazz : deletedObjects.keySet()) {
-            
-            MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(mongoDbSessionFactory.getClassToCollectionsMap().get(clazz));
-            Map<String, ? extends Entity> entities = deletedObjects.get(clazz);
-            for (Entity entity : entities.values()) {
-                mongoDbCollection.deleteOne(clientSession, Filters.eq("_id", entity.getId()));
+
+        // Bulk deletes
+        if (!bulkDeletes.isEmpty()) {
+            for (String collectionName : bulkDeletes.keySet()) {
+                MongoCollection<Document> collection = getCollection(collectionName);
+
+                List<Bson> deleteFilters = bulkDeletes.get(collectionName);
+                for (Bson deleteFilter : deleteFilters) {
+                    collection.deleteMany(clientSession, deleteFilter);
+                }
             }
         }
     }
@@ -394,6 +411,15 @@ public class MongoDbSession implements Session {
         deletedObjects.get(clazz).put(entity.getId(), entity);
         entity.setDeleted(true);
     }
+
+    public void bulkDelete(String collection, Bson filter) {
+        List<Bson> deleteFilters = bulkDeletes.get(collection);
+        if (deleteFilters == null) {
+            deleteFilters = new ArrayList<>();
+            bulkDeletes.put(collection, deleteFilters);
+        }
+        deleteFilters.add(filter);
+    }
     
     public void determineUpdatedObjects() {
         updatedObjects = new ArrayList<>();
@@ -518,7 +544,7 @@ public class MongoDbSession implements Session {
         return entity;
     }
     
-    public MongoCollection<Document> getCollection(String collection) {
+    protected MongoCollection<Document> getCollection(String collection) {
         return getMongoDatabase().getCollection(collection);
     }
 

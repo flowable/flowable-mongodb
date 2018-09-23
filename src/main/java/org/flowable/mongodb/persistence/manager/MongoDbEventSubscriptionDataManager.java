@@ -28,6 +28,7 @@ import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntity
 import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
 import org.flowable.engine.impl.persistence.entity.data.EventSubscriptionDataManager;
 import org.flowable.engine.runtime.EventSubscription;
+import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
@@ -36,19 +37,23 @@ import com.mongodb.client.model.Filters;
  * @author Joram Barrez
  */
 public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataManager<EventSubscriptionEntity> implements EventSubscriptionDataManager {
-    
+
     public static final String COLLECTION_EVENT_SUBSCRIPTION = "eventSubscriptions";
-    
+
+    public MongoDbEventSubscriptionDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
+
     @Override
     public String getCollection() {
         return COLLECTION_EVENT_SUBSCRIPTION;
     }
-    
+
     @Override
     public EventSubscriptionEntity create() {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public MessageEventSubscriptionEntity createMessageEventSubscription() {
         return new MessageEventSubscriptionEntityImpl();
@@ -63,7 +68,7 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
     public CompensateEventSubscriptionEntity createCompensateEventSubscription() {
         return new CompensateEventSubscriptionEntityImpl();
     }
-    
+
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
@@ -75,12 +80,12 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
         if (eventSubscriptionQuery.getProcessInstanceId() != null) {
             andFilters.add(Filters.eq("processInstanceId", eventSubscriptionQuery.getProcessInstanceId()));
         }
-        
+
         Bson filter = null;
         if (andFilters.size() > 0) {
             filter = Filters.and(andFilters.toArray(new Bson[andFilters.size()]));
         }
-        
+
         return getMongoDbSession().count(COLLECTION_EVENT_SUBSCRIPTION, filter);
     }
 
@@ -90,19 +95,19 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
         if (eventSubscriptionQuery.getProcessInstanceId() != null) {
             andFilters.add(Filters.eq("processInstanceId", eventSubscriptionQuery.getProcessInstanceId()));
         }
-        
+
         Bson filter = null;
         if (andFilters.size() > 0) {
             filter = Filters.and(andFilters.toArray(new Bson[andFilters.size()]));
         }
-        
+
         return getMongoDbSession().find(COLLECTION_EVENT_SUBSCRIPTION, filter);
     }
 
     @Override
     public List<MessageEventSubscriptionEntity> findMessageEventSubscriptionsByProcessInstanceAndEventName(
             String processInstanceId, String eventName) {
-        
+
         throw new UnsupportedOperationException();
     }
 
@@ -141,7 +146,7 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
     @Override
     public List<EventSubscriptionEntity> findEventSubscriptionsByTypeAndProcessDefinitionId(String type,
             String processDefinitionId, String tenantId) {
-        // TODO 
+        // TODO
         return Collections.emptyList();
     }
 
@@ -163,12 +168,12 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public void updateEventSubscriptionTenantId(String oldTenantId, String newTenantId) {
-        throw new UnsupportedOperationException();        
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteEventSubscriptionsForProcessDefinition(String processDefinitionId) {
-        getMongoDbSession().getCollection(COLLECTION_EVENT_SUBSCRIPTION).deleteMany(
+        getMongoDbSession().bulkDelete(COLLECTION_EVENT_SUBSCRIPTION,
             Filters.and(
                 Filters.eq("processDefinitionId", processDefinitionId),
                 Filters.not(Filters.exists("executionId")),
