@@ -27,6 +27,7 @@ public class HistoricVariableInstanceEntityMapper extends AbstractEntityToDocume
         HistoricVariableInstanceEntityImpl variableEntity = new HistoricVariableInstanceEntityImpl();
         
         variableEntity.setId(document.getString("_id"));
+        variableEntity.setRevision(document.getInteger("revision"));
         variableEntity.setName(document.getString("name"));
         variableEntity.setExecutionId(document.getString("executionId"));
         variableEntity.setProcessInstanceId(document.getString("processInstanceId"));
@@ -50,6 +51,7 @@ public class HistoricVariableInstanceEntityMapper extends AbstractEntityToDocume
         Document variableDocument = new Document();
         
         appendIfNotNull(variableDocument, "_id", variableEntity.getId());
+        appendIfNotNull(variableDocument, "revision", variableEntity.getRevision());
         appendIfNotNull(variableDocument, "name", variableEntity.getName());
         appendIfNotNull(variableDocument, "executionId", variableEntity.getExecutionId());
         appendIfNotNull(variableDocument, "processInstanceId", variableEntity.getProcessInstanceId());

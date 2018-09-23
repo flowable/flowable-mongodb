@@ -34,6 +34,7 @@ public class DeploymentEntityMapper extends AbstractEntityToDocumentMapper<Deplo
     
     @Override
     public Document toDocument(DeploymentEntityImpl deploymentEntity) {
+        // Note: no revision entity
         Document deploymentDocument = new Document();
         appendIfNotNull(deploymentDocument, "_id", deploymentEntity.getId());
         appendIfNotNull(deploymentDocument, "name", deploymentEntity.getName());

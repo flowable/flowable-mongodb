@@ -39,6 +39,7 @@ public class CommentEntityMapper extends AbstractEntityToDocumentMapper<CommentE
 
     @Override
     public Document toDocument(CommentEntityImpl commentEntity) {
+        // Note: no revision entity
         Document commentDocument = new Document();
         appendIfNotNull(commentDocument, "_id", commentEntity.getId());
         appendIfNotNull(commentDocument, "action", commentEntity.getAction());

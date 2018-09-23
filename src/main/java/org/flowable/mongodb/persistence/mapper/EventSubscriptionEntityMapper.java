@@ -37,6 +37,7 @@ public class EventSubscriptionEntityMapper extends AbstractEntityToDocumentMappe
         }
         
         eventEntity.setId(document.getString("_id"));
+        eventEntity.setRevision(document.getInteger("revision"));
         eventEntity.setActivityId(document.getString("activityId"));
         if (document.getString("configuration") != null) {
             eventEntity.setConfiguration(document.getString("configuration"));
@@ -57,6 +58,7 @@ public class EventSubscriptionEntityMapper extends AbstractEntityToDocumentMappe
     public Document toDocument(EventSubscriptionEntityImpl eventEntity) {
         Document eventDocument = new Document();
         appendIfNotNull(eventDocument, "_id", eventEntity.getId());
+        appendIfNotNull(eventDocument, "revision", eventEntity.getRevision());
         appendIfNotNull(eventDocument, "activityId", eventEntity.getActivityId());
         appendIfNotNull(eventDocument, "configuration", eventEntity.getConfiguration());
         appendIfNotNull(eventDocument, "created", eventEntity.getCreated());

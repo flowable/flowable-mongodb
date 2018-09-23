@@ -27,6 +27,7 @@ public class VariableInstanceEntityMapper extends AbstractEntityToDocumentMapper
         VariableInstanceEntityImpl variableEntity = new VariableInstanceEntityImpl();
         
         variableEntity.setId(document.getString("_id"));
+        variableEntity.setRevision(document.getInteger("revision"));
         variableEntity.setName(document.getString("name"));
         variableEntity.setExecutionId(document.getString("executionId"));
         variableEntity.setProcessDefinitionId(document.getString("processDefinitionId"));
@@ -52,6 +53,7 @@ public class VariableInstanceEntityMapper extends AbstractEntityToDocumentMapper
         Document variableDocument = new Document();
         
         appendIfNotNull(variableDocument, "_id", variableEntity.getId());
+        appendIfNotNull(variableDocument, "revision", variableEntity.getRevision());
         appendIfNotNull(variableDocument, "name", variableEntity.getName());
         appendIfNotNull(variableDocument, "executionId", variableEntity.getExecutionId());
         appendIfNotNull(variableDocument, "processDefinitionId", variableEntity.getProcessDefinitionId());

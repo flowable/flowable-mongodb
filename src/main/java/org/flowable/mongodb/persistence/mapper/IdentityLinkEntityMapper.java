@@ -39,6 +39,7 @@ public class IdentityLinkEntityMapper extends AbstractEntityToDocumentMapper<Ide
 
     @Override
     public Document toDocument(IdentityLinkEntityImpl identityLinkEntity) {
+        // Note: no revision
         Document identityLinkDocument = new Document();
         appendIfNotNull(identityLinkDocument, "_id", identityLinkEntity.getId());
         appendIfNotNull(identityLinkDocument, "type", identityLinkEntity.getType());

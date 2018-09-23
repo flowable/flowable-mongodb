@@ -139,24 +139,29 @@ public class MongoDbSession implements Session {
     protected void flushUpdates() {
 
         // Regular updates
-        for (Entity updatedObject : updatedObjects) {
+        for (Entity updatedEntity : updatedObjects) {
             
-            LOGGER.debug("updating: {}", updatedObject);
+            LOGGER.debug("updating: {}", updatedEntity);
 
-            Class<?> entityClass = updatedObject.getClass();
+            Class<?> entityClass = updatedEntity.getClass();
             String collectionName = mongoDbSessionFactory.getClassToCollectionsMap().get(entityClass);
-            BasicDBObject updateObject = mongoDbSessionFactory.getDataManagerForCollection(collectionName).createUpdateObject(updatedObject);
-            if (updateObject != null) {
+            BasicDBObject updateBasicDBObject = mongoDbSessionFactory.getDataManagerForCollection(collectionName).createUpdateObject(updatedEntity);
+            if (updateBasicDBObject != null) {
+
+                if (updatedEntity instanceof HasRevision) {
+                    updateBasicDBObject.append("revision", ((HasRevision) updatedEntity).getRevisionNext());
+                }
+
                 MongoCollection<Document> collection = getMongoDatabase().getCollection(collectionName);
                 UpdateResult updateResult = collection
-                    .updateOne(clientSession, Filters.eq("_id", updatedObject.getId()), new Document().append("$set", updateObject));
+                    .updateOne(clientSession, Filters.eq("_id", updatedEntity.getId()), new Document().append("$set", updateBasicDBObject));
                 if (updateResult.getModifiedCount() == 0) {
-                    throw new FlowableOptimisticLockingException(updatedObject + " was updated by another transaction concurrently");
+                    throw new FlowableOptimisticLockingException(updatedEntity + " was updated by another transaction concurrently");
                 }
             }
             
-            if (updatedObject instanceof HasRevision) {
-                ((HasRevision) updatedObject).setRevision(((HasRevision) updatedObject).getRevisionNext());
+            if (updatedEntity instanceof HasRevision) {
+                ((HasRevision) updatedEntity).setRevision(((HasRevision) updatedEntity).getRevisionNext());
             }
 
         }

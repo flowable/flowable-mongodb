@@ -24,7 +24,8 @@ public class HistoricActivityInstanceEntityMapper extends AbstractEntityToDocume
     @Override
     public HistoricActivityInstanceEntityImpl fromDocument(Document document) {
         HistoricActivityInstanceEntityImpl activityEntity = new HistoricActivityInstanceEntityImpl();
-        activityEntity.setId(document.getString("_id")); 
+        activityEntity.setId(document.getString("_id"));
+        activityEntity.setRevision(document.getInteger("revision"));
         activityEntity.setActivityId(document.getString("activityId"));
         activityEntity.setActivityName(document.getString("activityName"));
         activityEntity.setActivityType(document.getString("activityType"));
@@ -48,6 +49,7 @@ public class HistoricActivityInstanceEntityMapper extends AbstractEntityToDocume
     public Document toDocument(HistoricActivityInstanceEntityImpl activityEntity) {
         Document historicActivityInstanceDocument = new Document();
         appendIfNotNull(historicActivityInstanceDocument, "_id", activityEntity.getId());
+        appendIfNotNull(historicActivityInstanceDocument, "revision", activityEntity.getRevision());
         appendIfNotNull(historicActivityInstanceDocument, "activityId", activityEntity.getActivityId());
         appendIfNotNull(historicActivityInstanceDocument, "activityName", activityEntity.getActivityName());
         appendIfNotNull(historicActivityInstanceDocument, "activityType", activityEntity.getActivityType());

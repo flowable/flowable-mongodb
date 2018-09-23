@@ -28,11 +28,11 @@ import org.flowable.variable.api.types.VariableTypes;
 /**
  * @author Joram Barrez
  */
-public class HistoricDetailEntityMapper extends AbstractEntityToDocumentMapper<HistoricDetailEntity> {
+public class HistoricDetailEntityMapper extends AbstractEntityToDocumentMapper<HistoricDetailEntityImpl> {
 
     @Override
-    public HistoricDetailEntity fromDocument(Document document) {
-        HistoricDetailEntity historicDetailEntity = null;
+    public HistoricDetailEntityImpl fromDocument(Document document) {
+        HistoricDetailEntityImpl historicDetailEntity = null;
 
         String type = document.getString("type");
         if ("variableUpdate".equals(type)) {
@@ -60,6 +60,7 @@ public class HistoricDetailEntityMapper extends AbstractEntityToDocumentMapper<H
             throw new FlowableException("Programmatic error: invalid type " + type);
         }
 
+        historicDetailEntity.setId(document.getString("_id"));
         historicDetailEntity.setProcessInstanceId(document.getString("processInstanceId"));
         historicDetailEntity.setActivityInstanceId(document.getString("activityInstanceId"));
         historicDetailEntity.setExecutionId(document.getString("executionId"));
@@ -70,8 +71,10 @@ public class HistoricDetailEntityMapper extends AbstractEntityToDocumentMapper<H
     }
 
     @Override
-    public Document toDocument(HistoricDetailEntity entity) {
+    public Document toDocument(HistoricDetailEntityImpl entity) {
+        // Note: no revision entity
         Document document = new Document();
+        appendIfNotNull(document, "_id", entity.getId());
         appendIfNotNull(document, "processInstanceId", entity.getProcessInstanceId());
         appendIfNotNull(document, "activityInstanceId", entity.getActivityInstanceId());
         appendIfNotNull(document, "executionId", entity.getExecutionId());

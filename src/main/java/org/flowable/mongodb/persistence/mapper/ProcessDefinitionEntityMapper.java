@@ -25,6 +25,7 @@ public class ProcessDefinitionEntityMapper extends AbstractEntityToDocumentMappe
     public ProcessDefinitionEntityImpl fromDocument(Document document) {
         ProcessDefinitionEntityImpl processDefinitionEntity = new ProcessDefinitionEntityImpl();
         processDefinitionEntity.setId(document.getString("_id"));
+        processDefinitionEntity.setRevision(document.getInteger("revision"));
         processDefinitionEntity.setName(document.getString("name"));
         processDefinitionEntity.setDescription(document.getString("description"));
         processDefinitionEntity.setKey(document.getString("key"));
@@ -48,6 +49,7 @@ public class ProcessDefinitionEntityMapper extends AbstractEntityToDocumentMappe
     public Document toDocument(ProcessDefinitionEntityImpl processDefinitionEntity) {
         Document processDefinitionDocument = new Document();
         appendIfNotNull(processDefinitionDocument, "_id", processDefinitionEntity.getId());
+        appendIfNotNull(processDefinitionDocument, "revision", processDefinitionEntity.getRevision());
         appendIfNotNull(processDefinitionDocument, "name", processDefinitionEntity.getName());
         appendIfNotNull(processDefinitionDocument, "description", processDefinitionEntity.getDescription());
         appendIfNotNull(processDefinitionDocument, "key", processDefinitionEntity.getKey());

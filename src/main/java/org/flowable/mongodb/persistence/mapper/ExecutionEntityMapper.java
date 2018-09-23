@@ -25,6 +25,7 @@ public class ExecutionEntityMapper extends AbstractEntityToDocumentMapper<Execut
     public ExecutionEntityImpl fromDocument(Document document) {
         ExecutionEntityImpl executionEntity = new ExecutionEntityImpl();
         executionEntity.setId(document.getString("_id"));
+        executionEntity.setRevision(document.getInteger("revision"));
         executionEntity.setProcessInstanceId(document.getString("processInstanceId"));
         executionEntity.setBusinessKey(document.getString("businessKey"));
         executionEntity.setProcessDefinitionId(document.getString("processDefinitionId"));
@@ -64,6 +65,7 @@ public class ExecutionEntityMapper extends AbstractEntityToDocumentMapper<Execut
     public Document toDocument(ExecutionEntityImpl executionEntity) {
         Document executionDocument = new Document();
         appendIfNotNull(executionDocument, "_id", executionEntity.getId());
+        appendIfNotNull(executionDocument, "revision", executionEntity.getRevision());
         appendIfNotNull(executionDocument, "processInstanceId", executionEntity.getProcessInstanceId());
         appendIfNotNull(executionDocument, "businessKey", executionEntity.getBusinessKey());
         appendIfNotNull(executionDocument, "processDefinitionId", executionEntity.getProcessDefinitionId());

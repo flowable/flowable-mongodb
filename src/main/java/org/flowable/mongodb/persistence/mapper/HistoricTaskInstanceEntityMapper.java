@@ -18,6 +18,7 @@ import org.flowable.task.service.impl.persistence.entity.HistoricTaskInstanceEnt
 
 /**
  * @author Tijs Rademakers
+ * @author Joram Barrez
  */
 public class HistoricTaskInstanceEntityMapper extends AbstractEntityToDocumentMapper<HistoricTaskInstanceEntityImpl> {
 
@@ -26,6 +27,8 @@ public class HistoricTaskInstanceEntityMapper extends AbstractEntityToDocumentMa
         HistoricTaskInstanceEntityImpl taskEntity = new HistoricTaskInstanceEntityImpl();
         
         taskEntity.setId(document.getString("_id"));
+        taskEntity.setRevision(document.getInteger("revision"));
+        taskEntity.setRevision(document.getInteger("revision"));
         taskEntity.setName(document.getString("name"));
         taskEntity.setDescription(document.getString("description"));
         taskEntity.setPriority(document.getInteger("priority"));
@@ -61,6 +64,8 @@ public class HistoricTaskInstanceEntityMapper extends AbstractEntityToDocumentMa
         Document taskDocument = new Document();
         
         appendIfNotNull(taskDocument, "_id", taskEntity.getId());
+        appendIfNotNull(taskDocument, "revision", taskEntity.getRevision());
+        appendIfNotNull(taskDocument, "revision", taskEntity.getRevision());
         appendIfNotNull(taskDocument, "name", taskEntity.getName());
         appendIfNotNull(taskDocument, "parentTaskId", taskEntity.getParentTaskId());
         appendIfNotNull(taskDocument, "description", taskEntity.getDescription());

@@ -23,48 +23,50 @@ public class HistoricProcessInstanceEntityMapper extends AbstractEntityToDocumen
 
     @Override
     public HistoricProcessInstanceEntityImpl fromDocument(Document document) {
-        HistoricProcessInstanceEntityImpl instanceEntity = new HistoricProcessInstanceEntityImpl();
-        instanceEntity.setId(document.getString("_id"));
-        instanceEntity.setProcessInstanceId(document.getString("processInstanceId"));
-        instanceEntity.setBusinessKey(document.getString("businessKey"));
-        instanceEntity.setProcessDefinitionId(document.getString("processDefinitionId"));
-        instanceEntity.setCallbackId(document.getString("callbackId"));
-        instanceEntity.setCallbackType(document.getString("callbackType"));
-        instanceEntity.setDeleteReason(document.getString("deleteReason"));
-        instanceEntity.setDurationInMillis(document.getLong("durationInMillis"));
-        instanceEntity.setEndActivityId(document.getString("endActivityId"));
-        instanceEntity.setEndTime(document.getDate("endTime"));
-        instanceEntity.setName(document.getString("name"));
-        instanceEntity.setRevision(document.getInteger("revision"));
-        instanceEntity.setStartActivityId(document.getString("startActivityId"));
-        instanceEntity.setStartTime(document.getDate("startTime"));
-        instanceEntity.setStartUserId(document.getString("startUserId"));
-        instanceEntity.setSuperProcessInstanceId(document.getString("superProccessInstanceId"));
-        instanceEntity.setTenantId(document.getString("tenantId"));
+        HistoricProcessInstanceEntityImpl historicProcessInstanceEntity = new HistoricProcessInstanceEntityImpl();
+        historicProcessInstanceEntity.setId(document.getString("_id"));
+        historicProcessInstanceEntity.setRevision(document.getInteger("revision"));
+        historicProcessInstanceEntity.setProcessInstanceId(document.getString("processInstanceId"));
+        historicProcessInstanceEntity.setBusinessKey(document.getString("businessKey"));
+        historicProcessInstanceEntity.setProcessDefinitionId(document.getString("processDefinitionId"));
+        historicProcessInstanceEntity.setCallbackId(document.getString("callbackId"));
+        historicProcessInstanceEntity.setCallbackType(document.getString("callbackType"));
+        historicProcessInstanceEntity.setDeleteReason(document.getString("deleteReason"));
+        historicProcessInstanceEntity.setDurationInMillis(document.getLong("durationInMillis"));
+        historicProcessInstanceEntity.setEndActivityId(document.getString("endActivityId"));
+        historicProcessInstanceEntity.setEndTime(document.getDate("endTime"));
+        historicProcessInstanceEntity.setName(document.getString("name"));
+        historicProcessInstanceEntity.setRevision(document.getInteger("revision"));
+        historicProcessInstanceEntity.setStartActivityId(document.getString("startActivityId"));
+        historicProcessInstanceEntity.setStartTime(document.getDate("startTime"));
+        historicProcessInstanceEntity.setStartUserId(document.getString("startUserId"));
+        historicProcessInstanceEntity.setSuperProcessInstanceId(document.getString("superProccessInstanceId"));
+        historicProcessInstanceEntity.setTenantId(document.getString("tenantId"));
         
-        return instanceEntity;
+        return historicProcessInstanceEntity;
     }
 
     @Override
-    public Document toDocument(HistoricProcessInstanceEntityImpl instanceEntity) {
+    public Document toDocument(HistoricProcessInstanceEntityImpl historicProcessInstanceEntity) {
         Document historicProcessInstanceDocument = new Document();
-        appendIfNotNull(historicProcessInstanceDocument, "_id", instanceEntity.getId());
-        appendIfNotNull(historicProcessInstanceDocument, "processInstanceId", instanceEntity.getProcessInstanceId());
-        appendIfNotNull(historicProcessInstanceDocument, "businessKey", instanceEntity.getBusinessKey());
-        appendIfNotNull(historicProcessInstanceDocument, "processDefinitionId", instanceEntity.getProcessDefinitionId());
-        appendIfNotNull(historicProcessInstanceDocument, "callbackId", instanceEntity.getCallbackId());
-        appendIfNotNull(historicProcessInstanceDocument, "callbackType", instanceEntity.getCallbackType());
-        appendIfNotNull(historicProcessInstanceDocument, "deleteReason", instanceEntity.getDeleteReason());
-        appendIfNotNull(historicProcessInstanceDocument, "durationInMillis", instanceEntity.getDurationInMillis());
-        appendIfNotNull(historicProcessInstanceDocument, "endActivityId", instanceEntity.getEndActivityId());
-        appendIfNotNull(historicProcessInstanceDocument, "endTime", instanceEntity.getEndTime());
-        appendIfNotNull(historicProcessInstanceDocument, "name", instanceEntity.getName());
-        appendIfNotNull(historicProcessInstanceDocument, "revision", instanceEntity.getRevision());
-        appendIfNotNull(historicProcessInstanceDocument, "startActivityId", instanceEntity.getStartActivityId());
-        appendIfNotNull(historicProcessInstanceDocument, "startTime", instanceEntity.getStartTime());
-        appendIfNotNull(historicProcessInstanceDocument, "startUserId", instanceEntity.getStartUserId());
-        appendIfNotNull(historicProcessInstanceDocument, "superProccessInstanceId", instanceEntity.getSuperProcessInstanceId());
-        appendIfNotNull(historicProcessInstanceDocument, "tenantId", instanceEntity.getTenantId());
+        appendIfNotNull(historicProcessInstanceDocument, "_id", historicProcessInstanceEntity.getId());
+        appendIfNotNull(historicProcessInstanceDocument, "revision", historicProcessInstanceEntity.getRevision());
+        appendIfNotNull(historicProcessInstanceDocument, "processInstanceId", historicProcessInstanceEntity.getProcessInstanceId());
+        appendIfNotNull(historicProcessInstanceDocument, "businessKey", historicProcessInstanceEntity.getBusinessKey());
+        appendIfNotNull(historicProcessInstanceDocument, "processDefinitionId", historicProcessInstanceEntity.getProcessDefinitionId());
+        appendIfNotNull(historicProcessInstanceDocument, "callbackId", historicProcessInstanceEntity.getCallbackId());
+        appendIfNotNull(historicProcessInstanceDocument, "callbackType", historicProcessInstanceEntity.getCallbackType());
+        appendIfNotNull(historicProcessInstanceDocument, "deleteReason", historicProcessInstanceEntity.getDeleteReason());
+        appendIfNotNull(historicProcessInstanceDocument, "durationInMillis", historicProcessInstanceEntity.getDurationInMillis());
+        appendIfNotNull(historicProcessInstanceDocument, "endActivityId", historicProcessInstanceEntity.getEndActivityId());
+        appendIfNotNull(historicProcessInstanceDocument, "endTime", historicProcessInstanceEntity.getEndTime());
+        appendIfNotNull(historicProcessInstanceDocument, "name", historicProcessInstanceEntity.getName());
+        appendIfNotNull(historicProcessInstanceDocument, "revision", historicProcessInstanceEntity.getRevision());
+        appendIfNotNull(historicProcessInstanceDocument, "startActivityId", historicProcessInstanceEntity.getStartActivityId());
+        appendIfNotNull(historicProcessInstanceDocument, "startTime", historicProcessInstanceEntity.getStartTime());
+        appendIfNotNull(historicProcessInstanceDocument, "startUserId", historicProcessInstanceEntity.getStartUserId());
+        appendIfNotNull(historicProcessInstanceDocument, "superProccessInstanceId", historicProcessInstanceEntity.getSuperProcessInstanceId());
+        appendIfNotNull(historicProcessInstanceDocument, "tenantId", historicProcessInstanceEntity.getTenantId());
         
         return historicProcessInstanceDocument;
     }

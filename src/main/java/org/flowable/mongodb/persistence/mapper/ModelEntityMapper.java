@@ -29,6 +29,7 @@ public class ModelEntityMapper extends AbstractEntityToDocumentMapper<MongoDbMod
     public MongoDbModelEntityImpl fromDocument(Document document) {
         MongoDbModelEntityImpl modelEntity = new MongoDbModelEntityImpl();
         modelEntity.setId(document.getString("_id"));
+        modelEntity.setRevision(document.getInteger("revision"));
         modelEntity.setName(document.getString("name"));
         modelEntity.setKey(document.getString("key"));
         modelEntity.setCategory(document.getString("category"));
@@ -50,6 +51,8 @@ public class ModelEntityMapper extends AbstractEntityToDocumentMapper<MongoDbMod
     @Override
     public Document toDocument(MongoDbModelEntityImpl modelEntity) {
         Document modelDocument = new Document();
+        appendIfNotNull(modelDocument, "_id", modelEntity.getId());
+        appendIfNotNull(modelDocument, "revision", modelEntity.getRevision());
         appendIfNotNull(modelDocument, "name", modelEntity.getName());
         appendIfNotNull(modelDocument, "key", modelEntity.getKey());
         appendIfNotNull(modelDocument, "category", modelEntity.getCategory());

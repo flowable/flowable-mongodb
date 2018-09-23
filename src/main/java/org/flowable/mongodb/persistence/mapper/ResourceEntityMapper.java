@@ -23,12 +23,18 @@ public class ResourceEntityMapper extends AbstractEntityToDocumentMapper<Resourc
 
     @Override
     public ResourceEntityImpl fromDocument(Document document) {
-        // TODO Auto-generated method stub
-        return null;
+        ResourceEntityImpl resourceEntity = new ResourceEntityImpl();
+        resourceEntity.setId(document.getString("_id"));
+        resourceEntity.setName(document.getString("name"));
+        resourceEntity.setBytes((byte[]) document.get("bytes")); // TODO: does this work? Needs to be checked
+        resourceEntity.setDeploymentId(document.getString("deploymentId"));
+        resourceEntity.setGenerated(document.getBoolean("generated"));
+        return resourceEntity;
     }
 
     @Override
     public Document toDocument(ResourceEntityImpl resourceEntity) {
+        // Note: no revision
         Document resourceDocument = new Document();
         appendIfNotNull(resourceDocument, "_id", resourceEntity.getId());
         appendIfNotNull(resourceDocument, "name", resourceEntity.getName());

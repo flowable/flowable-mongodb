@@ -22,6 +22,7 @@ public abstract class AbstractJobEntityMapper<T extends Entity> extends Abstract
 
     public void copyJobInfoFromDocument(Document document, AbstractRuntimeJobEntity jobEntity) {
         jobEntity.setId(document.getString("_id"));
+        jobEntity.setRevision(document.getInteger("revision"));
         jobEntity.setCreateTime(document.getDate("createTime"));
         jobEntity.setDuedate(document.getDate("duedate"));
         jobEntity.setExceptionMessage(document.getString("exceptionMessage"));
@@ -45,6 +46,7 @@ public abstract class AbstractJobEntityMapper<T extends Entity> extends Abstract
     public Document copyJobInfoToDocument(AbstractRuntimeJobEntity jobEntity) {
         Document jobDocument = new Document();
         appendIfNotNull(jobDocument, "_id", jobEntity.getId());
+        appendIfNotNull(jobDocument, "revision", jobEntity.getRevision());
         appendIfNotNull(jobDocument, "createTime", jobEntity.getCreateTime());
         appendIfNotNull(jobDocument, "duedate", jobEntity.getDuedate());
         appendIfNotNull(jobDocument, "exceptionMessage", jobEntity.getExceptionMessage());
