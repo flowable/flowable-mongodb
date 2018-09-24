@@ -171,7 +171,7 @@ public class MongoDbSession implements Session {
 
     public UpdateResult updateImmediately(String collection, Bson filter, BasicDBObject updateDBObject) {
         MongoCollection<Document> mongoDbCollection = getCollection(collection);
-        return mongoDbCollection.updateOne(filter, new Document().append("$set", updateDBObject));
+        return mongoDbCollection.updateOne(clientSession, filter, new Document().append("$set", updateDBObject));
     }
     
     protected void flushDeletes() {
