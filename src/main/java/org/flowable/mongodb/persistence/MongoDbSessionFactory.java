@@ -93,6 +93,7 @@ public class MongoDbSessionFactory implements SessionFactory {
 
     protected MongoClient mongoClient;
     protected MongoDatabase mongoDatabase;
+    protected ClientSessionProvider clientSessionProvider;
 
     protected Map<Class<? extends Entity>, EntityToDocumentMapper<? extends Entity>> entityMappers = new HashMap<>();
     protected Map<Class<? extends Entity>, String> classToCollectionMap = new HashMap<>();
@@ -101,8 +102,13 @@ public class MongoDbSessionFactory implements SessionFactory {
     protected Map<String, AbstractMongoDbDataManager> collectionToDataManager = new HashMap<>();
 
     public MongoDbSessionFactory(MongoClient mongoClient, MongoDatabase mongoDatabase) {
+        this(mongoClient, mongoDatabase, null);
+    }
+
+    public MongoDbSessionFactory(MongoClient mongoClient, MongoDatabase mongoDatabase, ClientSessionProvider clientSessionProvider) {
         this.mongoClient = mongoClient;
         this.mongoDatabase = mongoDatabase;
+        this.clientSessionProvider = clientSessionProvider;
 
         initDefaultMappers();
     }
@@ -141,7 +147,11 @@ public class MongoDbSessionFactory implements SessionFactory {
 
     @Override
     public Session openSession(CommandContext commandContext) {
-        return new MongoDbSession(this, mongoClient, mongoDatabase, Context.getCommandContext().getSession(EntityCache.class));
+        if (clientSessionProvider == null) {
+            return new MongoDbSession(this, mongoClient, mongoDatabase, Context.getCommandContext().getSession(EntityCache.class));
+        } else {
+            return new MongoDbSession(this, mongoClient, mongoDatabase, Context.getCommandContext().getSession(EntityCache.class), clientSessionProvider.clientSession());
+        }
     }
 
     public void registerEntityMapper(Class<? extends Entity> clazz, EntityToDocumentMapper<? extends Entity> mapper, String collection) {

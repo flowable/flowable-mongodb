@@ -10,27 +10,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.flowable.test.delegate;
+package org.flowable.mongodb.persistence;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.JavaDelegate;
+import com.mongodb.client.ClientSession;
 
 /**
  * @author Joram Barrez
  */
-public class ThrowsExceptionTestJavaDelegate implements JavaDelegate {
-    
-    public static boolean FAIL;
-    public static AtomicInteger COUNT = new AtomicInteger();
-    
-    @Override
-    public void execute(DelegateExecution execution) {
-        COUNT.incrementAndGet();
-        if (FAIL) {
-            throw new RuntimeException();
-        }
-    }
+public interface ClientSessionProvider {
+
+    ClientSession clientSession();
 
 }

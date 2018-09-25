@@ -18,12 +18,14 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.job.api.Job;
 import org.flowable.task.api.Task;
+import org.flowable.test.delegate.StartProcessInstanceDelegate;
 import org.flowable.test.delegate.ThrowsExceptionTestJavaDelegate;
 import org.junit.jupiter.api.Test;
 
@@ -140,6 +142,29 @@ public class BasicFlowableMongoDbTest extends AbstractMongoDbTest {
         assertEquals("theUserTask", task.getTaskDefinitionKey());
         taskService.complete(task.getId());
         
+        assertEquals(0, runtimeService.createProcessInstanceQuery().count());
+    }
+
+    @Test
+    public void testNestedTransactions() {
+        ThrowsExceptionTestJavaDelegate.COUNT = new AtomicInteger(0);
+        ThrowsExceptionTestJavaDelegate.FAIL = true;
+
+        // Starts a process instance in a service task through the runtime service.
+        // That second process instance will throw an exception and everything should roll back,
+        // as the MongoDbSession should be reused.
+        repositoryService.createDeployment()
+            .addClasspathResource("nestedtransaction.bpmn20.xml")
+            .addClasspathResource("throwsException.bpmn20.xml")
+            .deploy();
+        try {
+            runtimeService.startProcessInstanceByKey("nestedTransaction");
+            fail("Expected exception");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        assertEquals(1, StartProcessInstanceDelegate.COUNT.get());
+        assertEquals(1, ThrowsExceptionTestJavaDelegate.COUNT.get());
         assertEquals(0, runtimeService.createProcessInstanceQuery().count());
     }
 

@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.ClientSessionOptions;
 import com.mongodb.MongoClient;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.FindIterable;
@@ -65,17 +66,22 @@ public class MongoDbSession implements Session {
     protected Map<String, List<Bson>> bulkDeletes = new HashMap<>();
 
     public MongoDbSession(MongoDbSessionFactory mongoDbSessionFactory, MongoClient mongoClient, MongoDatabase mongoDatabase, EntityCache entityCache) {
+        this(mongoDbSessionFactory, mongoClient, mongoDatabase, entityCache, mongoClient.startSession(ClientSessionOptions.builder().causallyConsistent(true).build()));
+        startTransaction();
+    }
+
+    /**
+     * Constructor to be used when the client session and transaction is managed externally, passing in the {@link ClientSession}.
+     */
+    public MongoDbSession(MongoDbSessionFactory mongoDbSessionFactory, MongoClient mongoClient, MongoDatabase mongoDatabase, EntityCache entityCache, ClientSession clientSession) {
         this.mongoDbSessionFactory = mongoDbSessionFactory;
         this.mongoClient = mongoClient;
         this.mongoDatabase = mongoDatabase;
         this.entityCache = entityCache;
-        
-        // TODO: transaction shouldn't be started when externally managed
-        startTransaction();
+        this.clientSession = clientSession;
     }
     
     public void startTransaction() {
-        clientSession = mongoClient.startSession();
         clientSession.startTransaction();
     }
 

@@ -14,23 +14,25 @@ package org.flowable.test.delegate;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.flowable.common.engine.api.delegate.Expression;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
+import org.flowable.engine.impl.util.CommandContextUtil;
 
 /**
  * @author Joram Barrez
  */
-public class ThrowsExceptionTestJavaDelegate implements JavaDelegate {
-    
-    public static boolean FAIL;
+public class StartProcessInstanceDelegate implements JavaDelegate {
+
     public static AtomicInteger COUNT = new AtomicInteger();
-    
+
+    private Expression processDefinitionKey;
+
     @Override
     public void execute(DelegateExecution execution) {
         COUNT.incrementAndGet();
-        if (FAIL) {
-            throw new RuntimeException();
-        }
+
+        CommandContextUtil.getProcessEngineConfiguration().getRuntimeService().startProcessInstanceByKey((String) processDefinitionKey.getValue(execution));
     }
 
 }
