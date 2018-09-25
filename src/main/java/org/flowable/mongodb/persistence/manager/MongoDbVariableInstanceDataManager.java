@@ -18,7 +18,6 @@ import java.util.Set;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.flowable.common.engine.impl.persistence.cache.CachedEntityMatcher;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.variable.service.impl.persistence.entity.VariableInstanceEntity;
 import org.flowable.variable.service.impl.persistence.entity.VariableInstanceEntityImpl;
@@ -35,8 +34,7 @@ public class MongoDbVariableInstanceDataManager extends AbstractMongoDbDataManag
 
     public static final String COLLECTION_VARIABLES = "variables";
 
-    protected CachedEntityMatcher<Entity> variableInstanceByExecutionIdMatcher =
-            (CachedEntityMatcher) new VariableInstanceByExecutionIdMatcher();
+    protected VariableInstanceByExecutionIdMatcher variableInstanceByExecutionIdMatcher = new VariableInstanceByExecutionIdMatcher();
 
     @Override
     public String getCollection() {

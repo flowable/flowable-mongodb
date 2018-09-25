@@ -221,14 +221,14 @@ public class MongoDbSession implements Session {
         return mapToEntities(collection, documents);
     }
     
-    public <T> List<T> find(String collection, Bson bsonFilter, Object parameter, Class<? extends Entity> entityClass, CachedEntityMatcher<Entity> cachedEntityMatcher) {
+    public <T extends Entity> List<T> find(String collection, Bson bsonFilter, Object parameter, Class<? extends Entity> entityClass, CachedEntityMatcher<T> cachedEntityMatcher) {
         return find(collection, bsonFilter, parameter, entityClass, cachedEntityMatcher, true);
     }
     
     @SuppressWarnings("unchecked")
-    public <T> List<T> find(String collection, Bson bsonFilter, Object parameter, Class<? extends Entity> entityClass, CachedEntityMatcher<Entity> cachedEntityMatcher, boolean checkCache) {
+    public <T extends Entity> List<T> find(String collection, Bson bsonFilter, Object parameter, Class<? extends Entity> entityClass, CachedEntityMatcher<T> cachedEntityMatcher, boolean checkCache) {
         FindIterable<Document> documents = findDocuments(collection, bsonFilter);
-        Collection<Entity> dbEntities = mapToEntitiesType(collection, documents);
+        Collection<? extends Entity> dbEntities = mapToEntitiesType(collection, documents);
 
         if (checkCache) {
 
@@ -246,8 +246,8 @@ public class MongoDbSession implements Session {
                 // Cache entities
                 if (cachedObjects != null && cachedEntityMatcher != null) {
                     for (CachedEntity cachedObject : cachedObjects) {
-                        Entity cachedEntity = cachedObject.getEntity();
-                        if (cachedEntityMatcher.isRetained(dbEntities, cachedObjects, cachedEntity, parameter)) {
+                        T cachedEntity = (T) cachedObject.getEntity();
+                        if (cachedEntityMatcher.isRetained((Collection<T>) dbEntities, cachedObjects, cachedEntity, parameter)) {
                             entityMap.put(cachedEntity.getId(), cachedEntity); // will overwrite db version with newer version
                         }
                     }
@@ -265,14 +265,14 @@ public class MongoDbSession implements Session {
         return (List<T>) new ArrayList<>(dbEntities);
     }
     
-    public <T> List<T> findFromCache(CachedEntityMatcher<Entity> entityMatcher, Object parameter, Class<? extends Entity> entityClass) {
+    public <T extends Entity> List<T> findFromCache(CachedEntityMatcher<T> entityMatcher, Object parameter, Class<? extends Entity> entityClass) {
         Collection<CachedEntity> cachedObjects = getEntityCache().findInCacheAsCachedObjects(entityClass);
 
         List<Entity> result = new ArrayList<>(cachedObjects != null ? cachedObjects.size() : 1);
         if (cachedObjects != null && entityMatcher != null) {
             for (CachedEntity cachedObject : cachedObjects) {
                 Entity cachedEntity = cachedObject.getEntity();
-                if (entityMatcher.isRetained(null, cachedObjects, cachedEntity, parameter) && !isEntityToBeDeleted(cachedEntity)) {
+                if (entityMatcher.isRetained(null, cachedObjects, (T) cachedEntity, parameter) && !isEntityToBeDeleted(cachedEntity)) {
                     result.add(cachedEntity);
                 }
             }

@@ -14,7 +14,6 @@ package org.flowable.mongodb.persistence.manager;
 
 import java.util.List;
 
-import org.flowable.common.engine.impl.persistence.cache.CachedEntityMatcher;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntityImpl;
@@ -32,7 +31,7 @@ public class MongoDbHistoricIdentityLinkDataManager extends AbstractMongoDbDataM
     
     public static final String COLLECTION_HISTORIC_IDENTITY_LINKS = "historicIdentityLinks";
 
-    protected CachedEntityMatcher<Entity> historicIdentityLinksByProcInstMatcher = (CachedEntityMatcher) new HistoricIdentityLinksByProcInstMatcher();
+    protected HistoricIdentityLinksByProcInstMatcher historicIdentityLinksByProcInstMatcher = new HistoricIdentityLinksByProcInstMatcher();
     
     @Override
     public String getCollection() {

@@ -22,7 +22,6 @@ import java.util.Map;
 import org.bson.conversions.Bson;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.common.engine.api.FlowableOptimisticLockingException;
-import org.flowable.common.engine.impl.persistence.cache.CachedEntityMatcher;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.impl.ExecutionQueryImpl;
@@ -53,19 +52,19 @@ public class MongoDbExecutionDataManager extends AbstractMongoDbDataManager<Exec
 
     public static final String COLLECTION_EXECUTIONS = "executions";
 
-    protected CachedEntityMatcher<Entity> executionsByParentIdMatcher = (CachedEntityMatcher) new ExecutionsByParentExecutionIdEntityMatcher();
+    protected ExecutionsByParentExecutionIdEntityMatcher executionsByParentIdMatcher = new ExecutionsByParentExecutionIdEntityMatcher();
 
-    protected CachedEntityMatcher<Entity> executionsByProcessInstanceIdMatcher = (CachedEntityMatcher) new ExecutionsByProcessInstanceIdEntityMatcher();
+    protected ExecutionsByProcessInstanceIdEntityMatcher executionsByProcessInstanceIdMatcher = new ExecutionsByProcessInstanceIdEntityMatcher();
 
-    protected CachedEntityMatcher<Entity> executionsWithSameRootProcessInstanceIdMatcher = (CachedEntityMatcher) new ExecutionsWithSameRootProcessInstanceIdMatcher();
+    protected ExecutionsWithSameRootProcessInstanceIdMatcher executionsWithSameRootProcessInstanceIdMatcher = new ExecutionsWithSameRootProcessInstanceIdMatcher();
 
-    protected CachedEntityMatcher<Entity> inactiveExecutionsInActivityAndProcInstMatcher = (CachedEntityMatcher) new InactiveExecutionsInActivityAndProcInstMatcher();
+    protected InactiveExecutionsInActivityAndProcInstMatcher inactiveExecutionsInActivityAndProcInstMatcher = new InactiveExecutionsInActivityAndProcInstMatcher();
 
-    protected CachedEntityMatcher<Entity> executionsByRootProcessInstanceMatcher = (CachedEntityMatcher) new ExecutionsByRootProcessInstanceMatcher();
+    protected ExecutionsByRootProcessInstanceMatcher executionsByRootProcessInstanceMatcher = new ExecutionsByRootProcessInstanceMatcher();
 
-    protected CachedEntityMatcher<Entity> executionByProcessInstanceMatcher = (CachedEntityMatcher) new ExecutionByProcessInstanceMatcher();
+    protected ExecutionByProcessInstanceMatcher executionByProcessInstanceMatcher = new ExecutionByProcessInstanceMatcher();
 
-    protected CachedEntityMatcher<Entity> inactiveExecutionsByProcInstMatcher = (CachedEntityMatcher) new InactiveExecutionsByProcInstMatcher();
+    protected InactiveExecutionsByProcInstMatcher inactiveExecutionsByProcInstMatcher = new InactiveExecutionsByProcInstMatcher();
 
     public MongoDbExecutionDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
         super(processEngineConfiguration);

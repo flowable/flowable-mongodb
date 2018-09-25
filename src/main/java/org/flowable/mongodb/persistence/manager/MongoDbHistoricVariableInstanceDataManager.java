@@ -15,7 +15,6 @@ package org.flowable.mongodb.persistence.manager;
 import java.util.List;
 import java.util.Map;
 
-import org.flowable.common.engine.impl.persistence.cache.CachedEntityMatcher;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.flowable.variable.service.impl.HistoricVariableInstanceQueryImpl;
@@ -34,7 +33,7 @@ public class MongoDbHistoricVariableInstanceDataManager extends AbstractMongoDbD
 
     public static final String COLLECTION_HISTORIC_VARIABLE_INSTANCES = "historicVariableInstances";
 
-    protected CachedEntityMatcher<Entity> historicVariableInstanceByProcInstMatcher = (CachedEntityMatcher) new HistoricVariableInstanceByProcInstMatcher();
+    protected HistoricVariableInstanceByProcInstMatcher historicVariableInstanceByProcInstMatcher = new HistoricVariableInstanceByProcInstMatcher();
 
     @Override
     public String getCollection() {
