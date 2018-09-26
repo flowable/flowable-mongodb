@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,6 +54,33 @@ public class BasicFlowableMongoDbTest extends AbstractMongoDbTest {
         assertEquals(deployment.getId(), processDefinition.getDeploymentId());
         assertEquals("oneTask", processDefinition.getKey());
         assertEquals(1, processDefinition.getVersion());
+    }
+
+    @Test
+    public void testRedeploy() {
+        repositoryService.createDeployment().addClasspathResource("oneTaskProcess.bpmn20.xml").deploy();
+        assertEquals(1, repositoryService.createProcessDefinitionQuery().count());
+        assertEquals(1, repositoryService.createProcessDefinitionQuery().list().size());
+
+        for (int i = 0; i < 8; i++) {
+            repositoryService.createDeployment().addClasspathResource("oneTaskProcess.bpmn20.xml").deploy();
+        }
+        assertEquals(9, repositoryService.createProcessDefinitionQuery().count());
+        assertEquals(9, repositoryService.createProcessDefinitionQuery().list().size());
+
+        ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("oneTask")
+            .latestVersion()
+            .singleResult();
+        assertEquals(9, processDefinition.getVersion());
+
+        List<ProcessDefinition> processDefinitions = repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey("oneTask")
+            .orderByProcessDefinitionVersion().asc()
+            .list();
+        for (int i = 0; i < 9; i++) {
+            assertEquals(i + 1, processDefinitions.get(i).getVersion());
+        }
     }
     
     @Test
@@ -112,7 +140,7 @@ public class BasicFlowableMongoDbTest extends AbstractMongoDbTest {
         assertEquals("test", variableMap.get("simpleText"));
         assertEquals(10, variableMap.get("simpleNumber"));
     }
-    
+
     @Test
     public void testBasicExclusiveGateway() {
         repositoryService.createDeployment().addClasspathResource("basicExclusiveGatewayProcess.bpmn20.xml").deploy();

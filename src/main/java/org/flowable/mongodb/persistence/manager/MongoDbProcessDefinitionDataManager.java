@@ -12,20 +12,22 @@
  */
 package org.flowable.mongodb.persistence.manager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.bson.conversions.Bson;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
+import org.flowable.engine.ProcessEngineConfiguration;
 import org.flowable.engine.impl.ProcessDefinitionQueryImpl;
 import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntity;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.flowable.engine.impl.persistence.entity.data.ProcessDefinitionDataManager;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
+import org.flowable.mongodb.persistence.entity.MongoDbProcessDefinitionEntityImpl;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
 
 /**
  * @author Joram Barrez
@@ -45,24 +47,50 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public ProcessDefinitionEntity create() {
-        return new ProcessDefinitionEntityImpl();
+        return new MongoDbProcessDefinitionEntityImpl();
     }
 
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
-        return null;
+        MongoDbProcessDefinitionEntityImpl processDefinitionEntity = (MongoDbProcessDefinitionEntityImpl) entity;
+        BasicDBObject updateObject = null;
+        updateObject = setUpdateProperty(processDefinitionEntity, "latest", processDefinitionEntity.isLatest(), updateObject);
+        updateObject = setUpdateProperty(processDefinitionEntity, "category", processDefinitionEntity.getCategory(), updateObject);
+        updateObject = setUpdateProperty(processDefinitionEntity, "suspensionState", processDefinitionEntity.getSuspensionState(), updateObject);
+        return updateObject;
+    }
+
+    @Override
+    public void insert(ProcessDefinitionEntity entity) {
+        MongoDbProcessDefinitionEntityImpl latestProcessDefinitionEntity = (MongoDbProcessDefinitionEntityImpl)
+            findLatestProcessDefinitionByKeyAndTenantId(entity.getKey(), entity.getTenantId());
+        if (latestProcessDefinitionEntity == null) {
+            ((MongoDbProcessDefinitionEntityImpl) entity).setLatest(true);
+        } else if (entity.getVersion() > latestProcessDefinitionEntity.getVersion()) {
+            latestProcessDefinitionEntity.setLatest(false);
+            ((MongoDbProcessDefinitionEntityImpl) entity).setLatest(true);
+        }
+
+        super.insert(entity);
     }
 
     @Override
     public ProcessDefinitionEntity findLatestProcessDefinitionByKey(String processDefinitionKey) {
         // TODO. Not all properties included yet. Check the mybatis query for all details.
-        // TODO: More performant way possible?
-        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS, Filters.eq("key", processDefinitionKey), Sorts.descending("version"), 1);
+        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS,
+            Filters.and(
+                Filters.eq("key", processDefinitionKey),
+                Filters.eq("latest",true)
+            ));
     }
 
     @Override
     public ProcessDefinitionEntity findLatestProcessDefinitionByKeyAndTenantId(String processDefinitionKey, String tenantId) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS, Filters.and(
+            Filters.eq("key", processDefinitionKey),
+            Filters.eq("latest", true),
+            Filters.eq("tenantId", tenantId)
+        ));
     }
 
     @Override
@@ -82,14 +110,96 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public List<ProcessDefinition> findProcessDefinitionsByQueryCriteria(ProcessDefinitionQueryImpl processDefinitionQuery) {
-        // TODO: extract and do properly
-        return getMongoDbSession().find(COLLECTION_PROCESS_DEFINITIONS, null);
+        return getMongoDbSession().find(COLLECTION_PROCESS_DEFINITIONS, createFilter(processDefinitionQuery));
     }
 
     @Override
     public long findProcessDefinitionCountByQueryCriteria(ProcessDefinitionQueryImpl processDefinitionQuery) {
-        // TODO: extract and do properly
-        return getMongoDbSession().count(COLLECTION_PROCESS_DEFINITIONS, null);
+        return getMongoDbSession().count(COLLECTION_PROCESS_DEFINITIONS, createFilter(processDefinitionQuery));
+    }
+
+    protected Bson createFilter(ProcessDefinitionQueryImpl query) {
+        List<Bson> filters = new ArrayList<>();
+        if (query.getId() != null) {
+            filters.add(Filters.eq("_id", query.getId()));
+        }
+        if (query.getIds() != null) {
+            filters.add(Filters.in("_id", query.getIds()));
+        }
+        if (query.getCategory() != null) {
+            filters.add(Filters.eq("category", query.getCategory()));
+        }
+        if (query.getCategoryLike() != null) {
+            filters.add(Filters.regex("category", query.getCategoryLike()));
+        }
+        if (query.getCategoryNotEquals() != null) {
+            filters.add(Filters.not(Filters.eq("category", query.getCategoryNotEquals())));
+        }
+        if (query.getName() != null) {
+            filters.add(Filters.eq("name", query.getName()));
+        }
+        if (query.getNameLike() != null) {
+            filters.add(Filters.regex("name", query.getNameLike()));
+        }
+        if (query.getDeploymentId() != null) {
+            filters.add(Filters.eq("deploymentId", query.getDeploymentId()));
+        }
+        if (query.getDeploymentIds() != null) {
+            filters.add(Filters.in("deploymentIds", query.getDeploymentIds()));
+        }
+        if (query.getKey() != null) {
+            filters.add(Filters.eq("key", query.getKey()));
+        }
+        if (query.getKeyLike() != null) {
+            filters.add(Filters.regex("key", query.getKeyLike()));
+        }
+        if (query.getResourceName() != null) {
+            filters.add(Filters.eq("resourceName", query.getResourceName()));
+        }
+        if (query.getResourceNameLike() != null) {
+            filters.add(Filters.regex("resourceName", query.getResourceNameLike()));
+        }
+        if (query.getVersion() != null) {
+            filters.add(Filters.eq("version", query.getVersion()));
+        }
+        if (query.getVersionGt() != null) {
+            filters.add(Filters.gt("version", query.getVersionGt()));
+        }
+        if (query.getVersionGte() != null) {
+            filters.add(Filters.gte("version", query.getVersionGte()));
+        }
+        if (query.getVersionLt() != null) {
+            filters.add(Filters.lt("version", query.getVersionLt()));
+        }
+        if (query.getVersionLte() != null) {
+            filters.add(Filters.lte("version", query.getVersionLte()));
+        }
+        if (query.isLatest()) {
+            filters.add(Filters.eq("latest", true));
+        }
+        if (query.getSuspensionState() != null) {
+            filters.add(Filters.eq("suspensionState", query.getSuspensionState().getStateCode()));
+        }
+        if (query.getAuthorizationUserId() != null) {
+            throw new UnsupportedOperationException();
+        }
+        if (query.getProcDefId() != null) {
+            // TODO: check if this property is correct. Looks wrong.
+            throw new UnsupportedOperationException();
+        }
+        if (query.getEngineVersion() != null) {
+            filters.add(Filters.eq("engineVersion", query.getEngineVersion()));
+        }
+        if (query.getTenantId() != null) {
+            filters.add(Filters.eq("tenantId", query.getTenantId()));
+        }
+        if (query.getTenantIdLike() != null) {
+            filters.add(Filters.regex("tenantId", query.getTenantIdLike().replace("%", ".*")));
+        }
+        if (query.isWithoutTenantId()) {
+            filters.add(Filters.or(Filters.eq("tenantId", ProcessEngineConfiguration.NO_TENANT_ID), Filters.not(Filters.exists("tenantId"))));
+        }
+        return makeAndFilter(filters);
     }
 
     @Override

@@ -14,12 +14,12 @@ package org.flowable.mongodb.persistence.entity;
 
 import java.util.Map;
 
-import org.flowable.engine.impl.persistence.entity.ModelEntityImpl;
+import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 
 /**
  * @author Joram Barrez
  */
-public class MongoDbModelEntityImpl extends ModelEntityImpl {
+public class MongoDbProcessDefinitionEntityImpl extends ProcessDefinitionEntityImpl {
 
     protected boolean latest;
 
@@ -29,6 +29,7 @@ public class MongoDbModelEntityImpl extends ModelEntityImpl {
         persistentState.put("latest", latest);
         return persistentState;
     }
+
     public boolean isLatest() {
         return latest;
     }

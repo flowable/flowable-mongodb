@@ -13,17 +13,16 @@
 package org.flowable.mongodb.persistence.mapper;
 
 import org.bson.Document;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
-import org.flowable.mongodb.persistence.EntityToDocumentMapper;
+import org.flowable.mongodb.persistence.entity.MongoDbProcessDefinitionEntityImpl;
 
 /**
  * @author Joram Barrez
  */
-public class ProcessDefinitionEntityMapper extends AbstractEntityToDocumentMapper<ProcessDefinitionEntityImpl> {
+public class ProcessDefinitionEntityMapper extends AbstractEntityToDocumentMapper<MongoDbProcessDefinitionEntityImpl> {
 
     @Override
-    public ProcessDefinitionEntityImpl fromDocument(Document document) {
-        ProcessDefinitionEntityImpl processDefinitionEntity = new ProcessDefinitionEntityImpl();
+    public MongoDbProcessDefinitionEntityImpl fromDocument(Document document) {
+        MongoDbProcessDefinitionEntityImpl processDefinitionEntity = new MongoDbProcessDefinitionEntityImpl();
         processDefinitionEntity.setId(document.getString("_id"));
         processDefinitionEntity.setRevision(document.getInteger("revision"));
         processDefinitionEntity.setName(document.getString("name"));
@@ -42,11 +41,16 @@ public class ProcessDefinitionEntityMapper extends AbstractEntityToDocumentMappe
         processDefinitionEntity.setDerivedFrom(document.getString("derivedFrom"));
         processDefinitionEntity.setDerivedFromRoot(document.getString("derivedFromRoot"));
         processDefinitionEntity.setDerivedVersion(document.getInteger("derivedVersion"));
+        processDefinitionEntity.setEngineVersion(document.getString("engineVersion"));
+
+        // Mongo impl specific
+        processDefinitionEntity.setLatest(document.getBoolean("latest"));
+
         return processDefinitionEntity;
     }
 
     @Override
-    public Document toDocument(ProcessDefinitionEntityImpl processDefinitionEntity) {
+    public Document toDocument(MongoDbProcessDefinitionEntityImpl processDefinitionEntity) {
         Document processDefinitionDocument = new Document();
         appendIfNotNull(processDefinitionDocument, "_id", processDefinitionEntity.getId());
         appendIfNotNull(processDefinitionDocument, "revision", processDefinitionEntity.getRevision());
@@ -66,6 +70,11 @@ public class ProcessDefinitionEntityMapper extends AbstractEntityToDocumentMappe
         appendIfNotNull(processDefinitionDocument, "derivedFrom", processDefinitionEntity.getDerivedFrom());
         appendIfNotNull(processDefinitionDocument, "derivedFromRoot", processDefinitionEntity.getDerivedFromRoot());
         appendIfNotNull(processDefinitionDocument, "derivedVersion", processDefinitionEntity.getDerivedVersion());
+        appendIfNotNull(processDefinitionDocument, "engineVersion", processDefinitionEntity.getEngineVersion());
+
+        // Mongo impl specific
+        appendIfNotNull(processDefinitionDocument, "latest", processDefinitionEntity.isLatest());
+
         return processDefinitionDocument;
     }
 

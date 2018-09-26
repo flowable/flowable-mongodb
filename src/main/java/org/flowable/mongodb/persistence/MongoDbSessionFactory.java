@@ -30,8 +30,6 @@ import org.flowable.engine.impl.persistence.entity.HistoricActivityInstanceEntit
 import org.flowable.engine.impl.persistence.entity.HistoricDetailEntityImpl;
 import org.flowable.engine.impl.persistence.entity.HistoricProcessInstanceEntityImpl;
 import org.flowable.engine.impl.persistence.entity.MessageEventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.ModelEntityImpl;
-import org.flowable.engine.impl.persistence.entity.ProcessDefinitionEntityImpl;
 import org.flowable.engine.impl.persistence.entity.ResourceEntityImpl;
 import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntityImpl;
@@ -39,6 +37,8 @@ import org.flowable.identitylink.service.impl.persistence.entity.IdentityLinkEnt
 import org.flowable.job.service.impl.persistence.entity.JobByteArrayEntityImpl;
 import org.flowable.job.service.impl.persistence.entity.JobEntityImpl;
 import org.flowable.job.service.impl.persistence.entity.TimerJobEntityImpl;
+import org.flowable.mongodb.persistence.entity.MongoDbModelEntityImpl;
+import org.flowable.mongodb.persistence.entity.MongoDbProcessDefinitionEntityImpl;
 import org.flowable.mongodb.persistence.manager.AbstractMongoDbDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbCommentDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbDeploymentDataManager;
@@ -116,7 +116,7 @@ public class MongoDbSessionFactory implements SessionFactory {
     protected void initDefaultMappers() {
         registerEntityMapper(DeploymentEntityImpl.class, new DeploymentEntityMapper(), MongoDbDeploymentDataManager.COLLECTION_DEPLOYMENT);
         registerEntityMapper(ResourceEntityImpl.class, new ResourceEntityMapper(), MongoDbResourceDataManager.COLLECTION_BYTE_ARRAY);
-        registerEntityMapper(ProcessDefinitionEntityImpl.class, new ProcessDefinitionEntityMapper(), MongoDbProcessDefinitionDataManager.COLLECTION_PROCESS_DEFINITIONS);
+        registerEntityMapper(MongoDbProcessDefinitionEntityImpl.class, new ProcessDefinitionEntityMapper(), MongoDbProcessDefinitionDataManager.COLLECTION_PROCESS_DEFINITIONS);
         registerEntityMapper(ExecutionEntityImpl.class, new ExecutionEntityMapper(), MongoDbExecutionDataManager.COLLECTION_EXECUTIONS);
         registerEntityMapper(SignalEventSubscriptionEntityImpl.class, new EventSubscriptionEntityMapper(), MongoDbEventSubscriptionDataManager.COLLECTION_EVENT_SUBSCRIPTION);
         registerEntityMapper(MessageEventSubscriptionEntityImpl.class, new EventSubscriptionEntityMapper(), MongoDbEventSubscriptionDataManager.COLLECTION_EVENT_SUBSCRIPTION);
@@ -127,7 +127,7 @@ public class MongoDbSessionFactory implements SessionFactory {
         registerEntityMapper(TaskEntityImpl.class, new TaskEntityMapper(), MongoDbTaskDataManager.COLLECTION_TASKS);
         registerEntityMapper(HistoricTaskInstanceEntityImpl.class, new HistoricTaskInstanceEntityMapper(), MongoDbHistoricTaskInstanceDataManager.COLLECTION_HISTORIC_TASK_INSTANCES);
         registerEntityMapper(VariableInstanceEntityImpl.class, new VariableInstanceEntityMapper(), MongoDbVariableInstanceDataManager.COLLECTION_VARIABLES);
-        registerEntityMapper(ModelEntityImpl.class, new ModelEntityMapper(), MongoDbModelDataManager.COLLECTION_MODELS);
+        registerEntityMapper(MongoDbModelEntityImpl.class, new ModelEntityMapper(), MongoDbModelDataManager.COLLECTION_MODELS);
 
         registerEntityMapper(JobEntityImpl.class, new JobEntityMapper(), MongoDbJobDataManager.COLLECTION_JOBS);
         registerEntityMapper(TimerJobEntityImpl.class, new TimerJobEntityMapper(), MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS);

@@ -58,12 +58,15 @@ public class MongoDbModelDataManager extends AbstractMongoDbDataManager<ModelEnt
 
     @Override
     public void insert(ModelEntity modelEntity) {
-        super.insert(modelEntity);
-
         MongoDbModelEntityImpl latestModel = (MongoDbModelEntityImpl) findLatestModel(modelEntity.getKey());
-        if (latestModel != null && modelEntity.getVersion() > latestModel.getVersion()) {
+        if (latestModel == null) {
+            ((MongoDbModelEntityImpl) modelEntity).setLatest(true);
+        } else if (modelEntity.getVersion() > latestModel.getVersion()) {
             latestModel.setLatest(false);
+            ((MongoDbModelEntityImpl) modelEntity).setLatest(true);
         }
+
+        super.insert(modelEntity);
     }
 
     protected ModelEntity findLatestModel(String key) {
