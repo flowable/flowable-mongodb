@@ -4,6 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>Flowable - Process Engine - MongoDB</name>
+    <description>BPM and workflow MongoDB engine</description>
     <groupId>org.flowable</groupId>
     <artifactId>flowable-process-engine-mongodb</artifactId>
     <version>6.4.0.alpha1</version>
@@ -116,5 +117,42 @@
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
+    
+    <url>http://www.flowable.org</url>
+	<licenses>
+		<license>
+			<name>Apache v2</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+		</license>
+	</licenses>
+	<organization>
+		<name>Flowable</name>
+		<url>http://www.flowable.org</url>
+	</organization>
+	<developers>
+		<developer>
+			<name>Joram Barrez</name>
+			<organization>Flowable</organization>
+			<url>http://www.flowable.org</url>
+		</developer>
+		<developer>
+			<name>Tijs Rademakers</name>
+			<organization>Flowable</organization>
+			<url>http://www.flowable.org</url>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>Github issues</system>
+		<url>https://github.com/flowable/flowable-mongodb/issues</url>
+	</issueManagement>
+	<ciManagement>
+		<system>Jenkins</system>
+		<url>http://qa.flowable.org</url>
+	</ciManagement>
+	<scm>
+		<url>git@github.com:flowable/flowable-mongodb.git</url>
+		<connection>scm:git:git@github.com:flowable/flowable-mongodb.git</connection>
+		<developerConnection>scm:git:git@github.com:flowable/flowable-mongodb.git</developerConnection>
+	</scm>
 
 </project>
