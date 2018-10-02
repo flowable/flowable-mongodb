@@ -7,7 +7,7 @@
     <description>BPM and workflow MongoDB engine</description>
     <groupId>org.flowable</groupId>
     <artifactId>flowable-process-engine-mongodb</artifactId>
-    <version>6.4.0.alpha1</version>
+    <version>6.4.0.alpha2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
