@@ -45,6 +45,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 
 /**
@@ -154,7 +155,6 @@ public class MongoDbSession implements Session {
     
     protected void flushUpdates() {
 
-        // Regular updates
         for (Entity updatedEntity : updatedObjects) {
             
             LOGGER.debug("updating: {}", updatedEntity);
@@ -194,15 +194,24 @@ public class MongoDbSession implements Session {
         // Regular deletes
         if (!deletedObjects.isEmpty()) {
             for (Class<? extends Entity> clazz : deletedObjects.keySet()) {
-                MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(mongoDbSessionFactory.getClassToCollectionsMap().get(clazz));
+
                 Map<String, ? extends Entity> entities = deletedObjects.get(clazz);
-                for (Entity entity : entities.values()) {
-                    mongoDbCollection.deleteOne(clientSession, Filters.eq("_id", entity.getId()));
+                if (!entities.isEmpty()) {
+
+                    MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(mongoDbSessionFactory.getClassToCollectionsMap().get(clazz));
+                    for (Entity entity : entities.values()) {
+                        DeleteResult deleteResult = mongoDbCollection.deleteOne(clientSession, Filters.eq("_id", entity.getId()));
+
+                        if (entity instanceof HasRevision && deleteResult.getDeletedCount() == 0) {
+                            throw new FlowableOptimisticLockingException(entity + " was deleted by another transaction concurrently");
+                        }
+                    }
                 }
+
             }
         }
 
-        // Bulk deletes
+        // Bulk deletes (no revision check)
         if (!bulkDeletes.isEmpty()) {
             for (String collectionName : bulkDeletes.keySet()) {
                 MongoCollection<Document> collection = getCollection(collectionName);
