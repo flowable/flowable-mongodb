@@ -16,7 +16,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.bson.Document;
-import org.flowable.common.engine.impl.history.HistoryLevel;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.ManagementService;
 import org.flowable.engine.ProcessEngine;
@@ -65,9 +64,8 @@ public class AbstractMongoDbTest {
 
     protected void initProcessEngine() {
         this.processEngineConfiguration = (MongoDbProcessEngineConfiguration) new MongoDbProcessEngineConfiguration()
-                .setServerAddresses(Arrays.asList(new ServerAddress("localhost", 27017), new ServerAddress("localhost", 27018), new ServerAddress("localhost", 27019)))
-                .setDisableIdmEngine(true)
-                .setHistoryLevel(HistoryLevel.AUDIT);
+                .setServerAddresses(Arrays.asList(new ServerAddress("localhost", 27017)))
+                .setDisableIdmEngine(true);
         
         DefaultAsyncJobExecutor asyncJobExecutor = new DefaultAsyncJobExecutor();
         asyncJobExecutor.setDefaultAsyncJobAcquireWaitTimeInMillis(1000);
@@ -76,11 +74,11 @@ public class AbstractMongoDbTest {
         processEngineConfiguration.setAsyncFailedJobWaitTime(1);
         
         this.processEngine = processEngineConfiguration.buildProcessEngine();
-        this.repositoryService = processEngine.getRepositoryService();
-        this.runtimeService = processEngine.getRuntimeService();
-        this.taskService = processEngine.getTaskService();
-        this.historyService = processEngine.getHistoryService();
-        this.managementService = processEngine.getManagementService();
+        this.repositoryService = this.processEngine.getRepositoryService();
+        this.runtimeService = this.processEngine.getRuntimeService();
+        this.taskService = this.processEngine.getTaskService();
+        this.historyService = this.processEngine.getHistoryService();
+        this.managementService = this.processEngine.getManagementService();
     }
     
     @AfterEach
