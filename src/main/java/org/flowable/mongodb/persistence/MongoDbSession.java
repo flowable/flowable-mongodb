@@ -21,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
@@ -133,12 +134,20 @@ public class MongoDbSession implements Session {
             LOGGER.debug("inserting type: {}", clazz);
             
             MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(mongoDbSessionFactory.getClassToCollectionsMap().get(clazz));
-            
-            Map<String, ? extends Entity> entities = insertedObjects.get(clazz);
+
             EntityToDocumentMapper entityMapper = mongoDbSessionFactory.getMapperForEntityClass(clazz);
-            for (Entity entity : entities.values()) {
-                Document document = entityMapper.toDocument(entity);
-                mongoDbCollection.insertOne(clientSession, document);
+            Map<String, Entity> entities = insertedObjects.get(clazz);
+            if (!entities.isEmpty()) { // Could have 0 elements due to the optimizations before
+                List<Document> documents = entities
+                    .values().stream()
+                    .map(entity -> entityMapper.toDocument(entity))
+                    .collect(Collectors.toList());
+
+                if (documents.size() == 1) {
+                    mongoDbCollection.insertOne(clientSession, documents.get(0));
+                } else {
+                    mongoDbCollection.insertMany(clientSession, documents);
+                }
             }
         }
     }
