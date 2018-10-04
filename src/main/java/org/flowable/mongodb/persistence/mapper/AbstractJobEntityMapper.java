@@ -16,8 +16,6 @@ import org.bson.Document;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
 import org.flowable.job.service.impl.persistence.entity.AbstractRuntimeJobEntity;
 
-import com.sun.webkit.dom.EntityImpl;
-
 public abstract class AbstractJobEntityMapper<T extends Entity> extends AbstractEntityToDocumentMapper<T> {
 
     public void copyJobInfoFromDocument(Document document, AbstractRuntimeJobEntity jobEntity) {

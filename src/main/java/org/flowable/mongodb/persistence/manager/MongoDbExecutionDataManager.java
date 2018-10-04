@@ -384,10 +384,10 @@ public class MongoDbExecutionDataManager extends AbstractMongoDbDataManager<Exec
     protected Bson createFilter(ProcessInstanceQueryImpl processInstanceQuery) {
         List<Bson> andFilters = new ArrayList<>();
 
-        andFilters.add(Filters.eq("parentId", null));
+        andFilters.add(Filters.not(Filters.exists("parentId")));
 
         if (processInstanceQuery.getExecutionId() != null) {
-            andFilters.add(Filters.eq("executionId", processInstanceQuery.getExecutionId()));
+            andFilters.add(Filters.eq("_id", processInstanceQuery.getExecutionId()));
         }
 
         if (processInstanceQuery.getProcessInstanceId() != null) {

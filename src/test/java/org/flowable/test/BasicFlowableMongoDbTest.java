@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
+import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.job.api.Job;
 import org.flowable.task.api.Task;
@@ -92,7 +93,16 @@ public class BasicFlowableMongoDbTest extends AbstractMongoDbTest {
         assertNotNull(processInstance.getProcessDefinitionKey());
         assertNotNull(processInstance.getProcessDefinitionId());
         assertNotNull(processInstance.getProcessDefinitionVersion());
-        
+
+        List<Execution> executions = runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).list();
+        assertEquals(2, executions.size());
+        assertEquals(2, runtimeService.createExecutionQuery().processInstanceId(processInstance.getId()).count());
+
+        ProcessInstance processInstanceResult = runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getId()).singleResult();
+        assertNotNull(processInstanceResult);
+        assertEquals(1, runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getId()).count());
+        assertEquals(1, runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getId()).list().size());
+
         Task task = taskService.createTaskQuery().singleResult();
         assertNotNull(task);
         assertNotNull(task.getId());
