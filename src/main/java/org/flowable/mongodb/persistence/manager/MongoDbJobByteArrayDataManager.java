@@ -27,10 +27,7 @@ import com.mongodb.client.model.Filters;
  */
 public class MongoDbJobByteArrayDataManager extends AbstractMongoDbDataManager<JobByteArrayEntity> implements JobByteArrayDataManager {
 
-    // In the regular persistency, all byte arrays go to one specific table
-    // This is probably not the best idea for MongoDB.
-    // Mimicking it for now, but this is probably not the best solution.
-    public static final String COLLECTION_JOB_BYTE_ARRAY = MongoDbResourceDataManager.COLLECTION_BYTE_ARRAY;
+    public static final String COLLECTION_JOB_BYTE_ARRAY = "jobByteArrays";
 
     @Override
     public String getCollection() {

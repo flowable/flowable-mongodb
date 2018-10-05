@@ -14,13 +14,16 @@ package org.flowable.test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.flowable.common.engine.impl.util.IoUtil;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.Execution;
@@ -37,8 +40,10 @@ import org.junit.jupiter.api.Test;
 public class BasicFlowableMongoDbTest extends AbstractMongoDbTest {
     
     @Test
-    public void testDeployProcess() {
-        repositoryService.createDeployment().addClasspathResource("oneTaskProcess.bpmn20.xml").deploy();
+    public void testDeployProcess() throws Exception {
+        String testDeploymentId = repositoryService.createDeployment().addClasspathResource("oneTaskProcess.bpmn20.xml")
+            .deploy()
+            .getId();
         assertEquals(1, repositoryService.createDeploymentQuery().count());
         assertEquals(1, repositoryService.createDeploymentQuery().list().size());
         
@@ -55,6 +60,10 @@ public class BasicFlowableMongoDbTest extends AbstractMongoDbTest {
         assertEquals(deployment.getId(), processDefinition.getDeploymentId());
         assertEquals("oneTask", processDefinition.getKey());
         assertEquals(1, processDefinition.getVersion());
+
+        InputStream resourceStream = repositoryService.getResourceAsStream(testDeploymentId, "oneTaskProcess.bpmn20.xml");
+        String xml = new String(IoUtil.readInputStream(resourceStream, "oneTaskProcess.bpmn20.xml"), "UTF-8");
+        assertTrue(xml.length() > 0);
     }
 
     @Test

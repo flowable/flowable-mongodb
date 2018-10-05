@@ -56,12 +56,17 @@ public class MongoDbResourceDataManager extends AbstractMongoDbDataManager<Resou
 
     @Override
     public ResourceEntity findResourceByDeploymentIdAndResourceName(String deploymentId, String resourceName) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().findOne(COLLECTION_BYTE_ARRAY,
+            Filters.and(
+                Filters.eq("deploymentId", deploymentId),
+                Filters.eq("name", resourceName)
+            )
+        );
     }
 
     @Override
     public List<ResourceEntity> findResourcesByDeploymentId(String deploymentId) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().find(COLLECTION_BYTE_ARRAY, Filters.eq("deploymentId", deploymentId));
     }
 
 }

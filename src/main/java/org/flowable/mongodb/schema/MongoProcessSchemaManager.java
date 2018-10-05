@@ -36,6 +36,7 @@ import org.flowable.mongodb.persistence.manager.MongoDbHistoricProcessInstanceDa
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricTaskInstanceDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricVariableInstanceDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbIdentityLinkDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbJobByteArrayDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbProcessDefinitionDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbResourceDataManager;
@@ -180,6 +181,8 @@ public class MongoProcessSchemaManager implements SchemaManager {
         mongoDatabase.getCollection(MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS).createIndex(new Document("processDefinitionId", 1));
         mongoDatabase.getCollection(MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS).createIndex(new Document().append("scopeId", 1).append("scopeType", 1));
         mongoDatabase.getCollection(MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS).createIndex(new Document().append("scopeId", 1).append("scopeType", 1));
+
+        mongoDatabase.getCollection(MongoDbJobByteArrayDataManager.COLLECTION_JOB_BYTE_ARRAY).createIndex(new Document("deploymentId", 1));
         
         mongoDatabase.getCollection(MongoDbHistoricActivityInstanceDataManager.COLLECTION_HISTORIC_ACTIVITY_INSTANCES).createIndex(new Document("startTime", 1));
         mongoDatabase.getCollection(MongoDbHistoricActivityInstanceDataManager.COLLECTION_HISTORIC_ACTIVITY_INSTANCES).createIndex(new Document("endTime", 1));

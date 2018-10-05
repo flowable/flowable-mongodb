@@ -13,6 +13,7 @@
 package org.flowable.mongodb.persistence.mapper;
 
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.flowable.job.service.impl.persistence.entity.JobByteArrayEntityImpl;
 
 /**
@@ -26,7 +27,9 @@ public class JobByteArrayEntityMapper extends AbstractJobEntityMapper<JobByteArr
         jobByteArrayEntity.setId(document.getString("_id"));
         jobByteArrayEntity.setName(document.getString("name"));
         jobByteArrayEntity.setDeploymentId(document.getString("deploymentId"));
-        jobByteArrayEntity.setBytes((byte[]) document.get("bytes"));
+
+        Binary binary = (Binary) document.get("bytes");
+        jobByteArrayEntity.setBytes(binary.getData());
         return jobByteArrayEntity;
     }
 

@@ -13,8 +13,8 @@
 package org.flowable.mongodb.persistence.mapper;
 
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.flowable.engine.impl.persistence.entity.ResourceEntityImpl;
-import org.flowable.mongodb.persistence.EntityToDocumentMapper;
 
 /**
  * @author Joram Barrez
@@ -26,7 +26,10 @@ public class ResourceEntityMapper extends AbstractEntityToDocumentMapper<Resourc
         ResourceEntityImpl resourceEntity = new ResourceEntityImpl();
         resourceEntity.setId(document.getString("_id"));
         resourceEntity.setName(document.getString("name"));
-        resourceEntity.setBytes((byte[]) document.get("bytes")); // TODO: does this work? Needs to be checked
+
+        Binary binary = (Binary) document.get("bytes");
+        resourceEntity.setBytes(binary.getData());
+
         resourceEntity.setDeploymentId(document.getString("deploymentId"));
         resourceEntity.setGenerated(document.getBoolean("generated"));
         return resourceEntity;
