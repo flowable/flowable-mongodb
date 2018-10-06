@@ -204,22 +204,46 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public ProcessDefinitionEntity findProcessDefinitionByDeploymentAndKey(String deploymentId, String processDefinitionKey) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS,
+            Filters.and(
+               Filters.eq("deploymentId", deploymentId),
+               Filters.eq("key", processDefinitionKey),
+               Filters.or(
+                   Filters.eq("tenantId", ProcessEngineConfiguration.NO_TENANT_ID),
+                   Filters.not(Filters.exists("tenantId")))
+            ));
     }
 
     @Override
     public ProcessDefinitionEntity findProcessDefinitionByDeploymentAndKeyAndTenantId(String deploymentId, String processDefinitionKey, String tenantId) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS,
+            Filters.and(
+                Filters.eq("deploymentId", deploymentId),
+                Filters.eq("key", processDefinitionKey),
+                Filters.eq("tenantId", tenantId)
+            ));
     }
 
     @Override
     public ProcessDefinitionEntity findProcessDefinitionByKeyAndVersion(String processDefinitionKey, Integer processDefinitionVersion) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS,
+            Filters.and(
+                Filters.eq("key", processDefinitionKey),
+                Filters.eq("version", processDefinitionVersion),
+                Filters.or(
+                    Filters.eq("tenantId", ProcessEngineConfiguration.NO_TENANT_ID),
+                    Filters.not(Filters.exists("tenantId")))
+            ));
     }
 
     @Override
     public ProcessDefinitionEntity findProcessDefinitionByKeyAndVersionAndTenantId(String processDefinitionKey, Integer processDefinitionVersion, String tenantId) {
-        throw new UnsupportedOperationException();
+        return getMongoDbSession().findOne(COLLECTION_PROCESS_DEFINITIONS,
+            Filters.and(
+                Filters.eq("key", processDefinitionKey),
+                Filters.eq("version", processDefinitionVersion),
+                Filters.eq("tenantId", tenantId)
+            ));
     }
 
     @Override
