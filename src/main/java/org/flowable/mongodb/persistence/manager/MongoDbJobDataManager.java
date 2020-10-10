@@ -65,14 +65,14 @@ public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity>
     }
 
     @Override
-    public List<JobEntity> findJobsToExecute(Page page) {
+    public List<JobEntity> findJobsToExecute(List<String> enabledCategories, Page page) {
         Bson filter = null;
         if (jobServiceConfiguration.getJobExecutionScope() == null) {
             filter = Filters.and(Filters.eq("scopeType", null), Filters.eq("lockExpirationTime", null));
 
         } else if (!jobServiceConfiguration.getJobExecutionScope().equals("all")){
             filter = Filters.and(Filters.eq("scopeType", jobServiceConfiguration.getJobExecutionScope()),
-                    Filters.eq("lockExpirationTime", null));
+                Filters.eq("lockExpirationTime", null));
 
         } else {
             filter = Filters.eq("lockExpirationTime", null);
@@ -91,9 +91,8 @@ public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity>
         Bson filter = Filters.eq("processInstanceId", processInstanceId);
         return getMongoDbSession().find(COLLECTION_JOBS, filter);
     }
-
     @Override
-    public List<JobEntity> findExpiredJobs(Page page) {
+    public List<JobEntity> findExpiredJobs(List<String> enabledCategories, Page page) {
         Bson filter = null;
         if (jobServiceConfiguration.getJobExecutionScope() == null) {
             filter = Filters.eq("scopeType", null);
@@ -119,6 +118,11 @@ public class MongoDbJobDataManager extends AbstractMongoDbDataManager<JobEntity>
 
     @Override
     public void resetExpiredJob(String jobId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public JobEntity findJobByCorrelationId(String correlationId) {
         throw new UnsupportedOperationException();
     }
 

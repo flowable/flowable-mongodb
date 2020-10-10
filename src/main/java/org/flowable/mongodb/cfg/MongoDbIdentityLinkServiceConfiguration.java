@@ -22,24 +22,17 @@ import org.flowable.mongodb.persistence.manager.MongoDbIdentityLinkDataManager;
  */
 public class MongoDbIdentityLinkServiceConfiguration extends IdentityLinkServiceConfiguration {
     
-    protected MongoDbSessionFactory mongoDbSessionFactory;
-    
+    public MongoDbIdentityLinkServiceConfiguration(String engineName) {
+        super(engineName);
+    }
+
     @Override
     public void initDataManagers() {
         MongoDbIdentityLinkDataManager mongoDbIdentityLinkDataManager = new MongoDbIdentityLinkDataManager();
-        mongoDbSessionFactory.registerDataManager(MongoDbIdentityLinkDataManager.COLLECTION_IDENTITY_LINKS, mongoDbIdentityLinkDataManager);
         this.identityLinkDataManager = mongoDbIdentityLinkDataManager;
         
         MongoDbHistoricIdentityLinkDataManager mongoDbHistoricIdentityLinkDataManager = new MongoDbHistoricIdentityLinkDataManager();
-        mongoDbSessionFactory.registerDataManager(MongoDbHistoricIdentityLinkDataManager.COLLECTION_HISTORIC_IDENTITY_LINKS, mongoDbHistoricIdentityLinkDataManager);
         this.historicIdentityLinkDataManager = mongoDbHistoricIdentityLinkDataManager;
     }
 
-    public MongoDbSessionFactory getMongoDbSessionFactory() {
-        return mongoDbSessionFactory;
-    }
-
-    public void setMongoDbSessionFactory(MongoDbSessionFactory mongoDbSessionFactory) {
-        this.mongoDbSessionFactory = mongoDbSessionFactory;
-    }
 }

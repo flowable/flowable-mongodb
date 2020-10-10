@@ -14,16 +14,16 @@ package org.flowable.mongodb.persistence.mapper;
 
 import org.bson.Document;
 import org.bson.types.Binary;
-import org.flowable.job.service.impl.persistence.entity.JobByteArrayEntityImpl;
+import org.flowable.common.engine.impl.persistence.entity.ByteArrayEntityImpl;
 
 /**
  * @author Joram Barrez
  */
-public class JobByteArrayEntityMapper extends AbstractJobEntityMapper<JobByteArrayEntityImpl> {
+public class JobByteArrayEntityMapper extends AbstractJobEntityMapper<ByteArrayEntityImpl> {
 
     @Override
-    public JobByteArrayEntityImpl fromDocument(Document document) {
-        JobByteArrayEntityImpl jobByteArrayEntity = new JobByteArrayEntityImpl();
+    public ByteArrayEntityImpl fromDocument(Document document) {
+        ByteArrayEntityImpl jobByteArrayEntity = new ByteArrayEntityImpl();
         jobByteArrayEntity.setId(document.getString("_id"));
         jobByteArrayEntity.setName(document.getString("name"));
         jobByteArrayEntity.setDeploymentId(document.getString("deploymentId"));
@@ -34,7 +34,7 @@ public class JobByteArrayEntityMapper extends AbstractJobEntityMapper<JobByteArr
     }
 
     @Override
-    public Document toDocument(JobByteArrayEntityImpl jobByteArrayEntity) {
+    public Document toDocument(ByteArrayEntityImpl jobByteArrayEntity) {
         Document document = new Document();
         appendIfNotNull(document, "_id", jobByteArrayEntity.getId());
         appendIfNotNull(document, "name", jobByteArrayEntity.getName());

@@ -15,6 +15,7 @@ package org.flowable.mongodb.cfg;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.flowable.common.engine.api.scope.ScopeTypes;
 import org.flowable.common.engine.impl.interceptor.CommandInterceptor;
 import org.flowable.common.engine.impl.persistence.GenericManagerFactory;
 import org.flowable.common.engine.impl.persistence.StrongUuidGenerator;
@@ -22,20 +23,34 @@ import org.flowable.common.engine.impl.persistence.cache.EntityCache;
 import org.flowable.common.engine.impl.persistence.cache.EntityCacheImpl;
 import org.flowable.engine.impl.SchemaOperationsProcessEngineBuild;
 import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.flowable.eventsubscription.service.EventSubscriptionServiceConfiguration;
 import org.flowable.identitylink.service.IdentityLinkServiceConfiguration;
 import org.flowable.job.service.JobServiceConfiguration;
 import org.flowable.mongodb.persistence.MongoDbSessionFactory;
+import org.flowable.mongodb.persistence.manager.AbstractMongoDbDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbActivityInstanceDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbCommentDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbDeploymentDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbEventSubscriptionDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbExecutionDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbExternalWorkerJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricActivityInstanceDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricDetailDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbHistoricIdentityLinkDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbHistoricProcessInstanceDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbHistoricTaskInstanceDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbHistoricVariableInstanceDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbIdentityLinkDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbModelDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbProcessDefinitionDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbProcessDefinitionInfoDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbResourceDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbTaskDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbTimerJobDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbVariableInstanceDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbDeadLetterJobDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbSuspendedJobDataManager;
 import org.flowable.mongodb.schema.MongoProcessSchemaManager;
 import org.flowable.mongodb.transaction.MongoDbTransactionContextFactory;
 import org.flowable.task.service.TaskServiceConfiguration;
@@ -78,6 +93,42 @@ public class MongoDbProcessEngineConfiguration extends ProcessEngineConfiguratio
         this.performanceSettings.setEnableTaskRelationshipCounts(true);
 
         this.idGenerator = new StrongUuidGenerator();
+
+        this.disableEventRegistry = true;
+    }
+
+    @Override
+    public void init() {
+        super.init();
+
+        mongoDbSessionFactory.registerDataManager(MongoDbEventSubscriptionDataManager.COLLECTION_EVENT_SUBSCRIPTION, (AbstractMongoDbDataManager) eventSubscriptionServiceConfiguration.getEventSubscriptionDataManager());
+
+        mongoDbSessionFactory.registerDataManager(MongoDbIdentityLinkDataManager.COLLECTION_IDENTITY_LINKS, (AbstractMongoDbDataManager) identityLinkServiceConfiguration.getIdentityLinkDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbHistoricIdentityLinkDataManager.COLLECTION_HISTORIC_IDENTITY_LINKS, (AbstractMongoDbDataManager) identityLinkServiceConfiguration.getHistoricIdentityLinkDataManager());
+
+        mongoDbSessionFactory.registerDataManager(MongoDbJobDataManager.COLLECTION_JOBS, (AbstractMongoDbDataManager) jobServiceConfiguration.getJobDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS, (AbstractMongoDbDataManager) jobServiceConfiguration.getTimerJobDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbSuspendedJobDataManager.COLLECTION_SUSPENDED_JOBS, (AbstractMongoDbDataManager) jobServiceConfiguration.getSuspendedJobDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbDeadLetterJobDataManager.COLLECTION_DEADLETTER_JOBS, (AbstractMongoDbDataManager) jobServiceConfiguration.getDeadLetterJobDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbExternalWorkerJobDataManager.COLLECTION_EXTERNAL_WORKER_JOBS, (AbstractMongoDbDataManager) jobServiceConfiguration.getExternalWorkerJobDataManager());
+
+        mongoDbSessionFactory.registerDataManager(MongoDbDeploymentDataManager.COLLECTION_DEPLOYMENT, (AbstractMongoDbDataManager) getDeploymentDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbResourceDataManager.COLLECTION_BYTE_ARRAY, (AbstractMongoDbDataManager) getResourceDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbProcessDefinitionDataManager.COLLECTION_PROCESS_DEFINITIONS, (AbstractMongoDbDataManager) getProcessDefinitionDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbExecutionDataManager.COLLECTION_EXECUTIONS, (AbstractMongoDbDataManager) getExecutionDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbProcessDefinitionInfoDataManager.COLLECTION_PROCESS_DEFINITION_INFO, (AbstractMongoDbDataManager) getProcessDefinitionInfoDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbCommentDataManager.COLLECTION_COMMENTS, (AbstractMongoDbDataManager) getCommentDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbModelDataManager.COLLECTION_MODELS, (AbstractMongoDbDataManager) getModelDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbHistoricProcessInstanceDataManager.COLLECTION_HISTORIC_PROCESS_INSTANCES, (AbstractMongoDbDataManager) getHistoricProcessInstanceDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbActivityInstanceDataManager.COLLECTION_ACTIVITY_INSTANCES, (AbstractMongoDbDataManager) getActivityInstanceDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbHistoricActivityInstanceDataManager.COLLECTION_HISTORIC_ACTIVITY_INSTANCES, (AbstractMongoDbDataManager) getHistoricActivityInstanceDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbHistoricDetailDataManager.COLLECTION_HISTORIC_DETAILS, (AbstractMongoDbDataManager) getHistoricDetailDataManager());
+
+        mongoDbSessionFactory.registerDataManager(MongoDbTaskDataManager.COLLECTION_TASKS, (AbstractMongoDbDataManager) taskServiceConfiguration.getTaskDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbHistoricTaskInstanceDataManager.COLLECTION_HISTORIC_TASK_INSTANCES, (AbstractMongoDbDataManager) taskServiceConfiguration.getHistoricTaskInstanceDataManager());
+
+        mongoDbSessionFactory.registerDataManager(MongoDbVariableInstanceDataManager.COLLECTION_VARIABLES, (AbstractMongoDbDataManager) variableServiceConfiguration.getVariableInstanceDataManager());
+        mongoDbSessionFactory.registerDataManager(MongoDbHistoricVariableInstanceDataManager.COLLECTION_HISTORIC_VARIABLE_INSTANCES, (AbstractMongoDbDataManager) variableServiceConfiguration.getHistoricVariableInstanceDataManager());
     }
 
     @Override
@@ -122,77 +173,68 @@ public class MongoDbProcessEngineConfiguration extends ProcessEngineConfiguratio
     @Override
     public void initDataManagers() {
         MongoDbDeploymentDataManager mongoDeploymentDataManager = new MongoDbDeploymentDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbDeploymentDataManager.COLLECTION_DEPLOYMENT, mongoDeploymentDataManager);
         this.deploymentDataManager = mongoDeploymentDataManager;
 
         MongoDbResourceDataManager mongoDbResourceDataManager = new MongoDbResourceDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbResourceDataManager.COLLECTION_BYTE_ARRAY, mongoDbResourceDataManager);
         this.resourceDataManager = mongoDbResourceDataManager;
 
         MongoDbProcessDefinitionDataManager mongoDbProcessDefinitionDataManager = new MongoDbProcessDefinitionDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbProcessDefinitionDataManager.COLLECTION_PROCESS_DEFINITIONS, mongoDbProcessDefinitionDataManager);
         this.processDefinitionDataManager = mongoDbProcessDefinitionDataManager;
 
         MongoDbExecutionDataManager mongoDbExecutionDataManager = new MongoDbExecutionDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbExecutionDataManager.COLLECTION_EXECUTIONS, mongoDbExecutionDataManager);
         this.executionDataManager = mongoDbExecutionDataManager;
 
         MongoDbProcessDefinitionInfoDataManager mongoDbProcessDefinitionInfoDataManager = new MongoDbProcessDefinitionInfoDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbProcessDefinitionInfoDataManager.COLLECTION_PROCESS_DEFINITION_INFO, mongoDbProcessDefinitionInfoDataManager);
         this.processDefinitionInfoDataManager = mongoDbProcessDefinitionInfoDataManager;
 
-        MongoDbEventSubscriptionDataManager mongoDbEventSubscriptionDataManager = new MongoDbEventSubscriptionDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbEventSubscriptionDataManager.COLLECTION_EVENT_SUBSCRIPTION, mongoDbEventSubscriptionDataManager);
-        this.eventSubscriptionDataManager = mongoDbEventSubscriptionDataManager;
-
         MongoDbCommentDataManager mongoDbCommentDataManager = new MongoDbCommentDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbCommentDataManager.COLLECTION_COMMENTS, mongoDbCommentDataManager);
         this.commentDataManager = mongoDbCommentDataManager;
 
         MongoDbModelDataManager mongoDbModelDataManager = new MongoDbModelDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbModelDataManager.COLLECTION_MODELS, mongoDbModelDataManager);
         this.modelDataManager = mongoDbModelDataManager;
 
         MongoDbHistoricProcessInstanceDataManager mongoDbHistoricProcessInstanceDataManager = new MongoDbHistoricProcessInstanceDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbHistoricProcessInstanceDataManager.COLLECTION_HISTORIC_PROCESS_INSTANCES, mongoDbHistoricProcessInstanceDataManager);
         this.historicProcessInstanceDataManager = mongoDbHistoricProcessInstanceDataManager;
 
+        MongoDbActivityInstanceDataManager mongoDbActivityInstanceDataManager = new MongoDbActivityInstanceDataManager(this);
+        this.activityInstanceDataManager = mongoDbActivityInstanceDataManager;
+
         MongoDbHistoricActivityInstanceDataManager mongoDbHistoricActivityInstanceDataManager = new MongoDbHistoricActivityInstanceDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbHistoricActivityInstanceDataManager.COLLECTION_HISTORIC_ACTIVITY_INSTANCES, mongoDbHistoricActivityInstanceDataManager);
         this.historicActivityInstanceDataManager = mongoDbHistoricActivityInstanceDataManager;
 
         MongoDbHistoricDetailDataManager mongoDbHistoricDetailDataManager = new MongoDbHistoricDetailDataManager(this);
-        mongoDbSessionFactory.registerDataManager(MongoDbHistoricDetailDataManager.COLLECTION_HISTORIC_DETAILS, mongoDbHistoricDetailDataManager);
         this.historicDetailDataManager = mongoDbHistoricDetailDataManager;
 
     }
 
     @Override
     protected JobServiceConfiguration instantiateJobServiceConfiguration() {
-        MongoDbJobServiceConfiguration mongoDbJobServiceConfiguration = new MongoDbJobServiceConfiguration();
-        mongoDbJobServiceConfiguration.setMongoDbSessionFactory(mongoDbSessionFactory);
+        MongoDbJobServiceConfiguration mongoDbJobServiceConfiguration = new MongoDbJobServiceConfiguration(ScopeTypes.BPMN);
         return mongoDbJobServiceConfiguration;
     }
 
     @Override
     protected TaskServiceConfiguration instantiateTaskServiceConfiguration() {
-        MongoDbTaskServiceConfiguration mongoDbTaskServiceConfiguration = new MongoDbTaskServiceConfiguration();
-        mongoDbTaskServiceConfiguration.setMongoDbSessionFactory(mongoDbSessionFactory);
+        MongoDbTaskServiceConfiguration mongoDbTaskServiceConfiguration = new MongoDbTaskServiceConfiguration(ScopeTypes.BPMN);
         return mongoDbTaskServiceConfiguration;
     }
 
     @Override
     protected IdentityLinkServiceConfiguration instantiateIdentityLinkServiceConfiguration() {
-        MongoDbIdentityLinkServiceConfiguration mongoDbIdentityLinkServiceConfiguration = new MongoDbIdentityLinkServiceConfiguration();
-        mongoDbIdentityLinkServiceConfiguration.setMongoDbSessionFactory(mongoDbSessionFactory);
+        MongoDbIdentityLinkServiceConfiguration mongoDbIdentityLinkServiceConfiguration = new MongoDbIdentityLinkServiceConfiguration(ScopeTypes.BPMN);
         return mongoDbIdentityLinkServiceConfiguration;
     }
 
     @Override
     protected VariableServiceConfiguration instantiateVariableServiceConfiguration() {
-        MongoDbVariableServiceConfiguration mongoDbVariableServiceConfiguration = new MongoDbVariableServiceConfiguration();
-        mongoDbVariableServiceConfiguration.setMongoDbSessionFactory(mongoDbSessionFactory);
+        MongoDbVariableServiceConfiguration mongoDbVariableServiceConfiguration = new MongoDbVariableServiceConfiguration(ScopeTypes.BPMN);
         return mongoDbVariableServiceConfiguration;
+    }
+
+    @Override
+    protected EventSubscriptionServiceConfiguration instantiateEventSubscriptionServiceConfiguration() {
+        MongoDbEventSubscriptionServiceConfiguration mongoDbEventSubscriptionServiceConfiguration = new MongoDbEventSubscriptionServiceConfiguration(ScopeTypes.BPMN);
+        return mongoDbEventSubscriptionServiceConfiguration;
     }
 
     @Override

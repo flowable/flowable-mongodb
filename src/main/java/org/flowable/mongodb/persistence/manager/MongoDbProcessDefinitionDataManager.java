@@ -223,6 +223,15 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
                 Filters.eq("tenantId", tenantId)
             ));
     }
+    @Override
+    public ProcessDefinitionEntity findProcessDefinitionByParentDeploymentAndKey(String parentDeploymentId, String processDefinitionKey) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public ProcessDefinitionEntity findProcessDefinitionByParentDeploymentAndKeyAndTenantId(String parentDeploymentId, String processDefinitionKey, String tenantId) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public ProcessDefinitionEntity findProcessDefinitionByKeyAndVersion(String processDefinitionKey, Integer processDefinitionVersion) {
@@ -258,6 +267,11 @@ public class MongoDbProcessDefinitionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public void updateProcessDefinitionTenantIdForDeployment(String deploymentId, String newTenantId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updateProcessDefinitionVersionForProcessDefinitionId(String processDefinitionId, int version) {
         throw new UnsupportedOperationException();
     }
 

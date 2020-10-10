@@ -99,6 +99,11 @@ public class MongoDbHistoricDetailDataManager extends AbstractMongoDbDataManager
     }
 
     @Override
+    public void deleteHistoricDetailForNonExistingProcessInstances() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
     }

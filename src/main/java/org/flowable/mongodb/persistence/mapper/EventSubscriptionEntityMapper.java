@@ -14,11 +14,14 @@ package org.flowable.mongodb.persistence.mapper;
 
 import org.bson.Document;
 import org.flowable.common.engine.api.FlowableException;
-import org.flowable.engine.impl.persistence.entity.CompensateEventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.EventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.MessageEventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
-import org.flowable.mongodb.persistence.EntityToDocumentMapper;
+import org.flowable.eventsubscription.service.impl.persistence.entity.CompensateEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.CompensateEventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.EventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.GenericEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.MessageEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.MessageEventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.SignalEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
 
 public class EventSubscriptionEntityMapper extends AbstractEntityToDocumentMapper<EventSubscriptionEntityImpl> {
 
@@ -69,6 +72,16 @@ public class EventSubscriptionEntityMapper extends AbstractEntityToDocumentMappe
         appendIfNotNull(eventDocument, "processInstanceId", eventEntity.getProcessInstanceId());
         appendIfNotNull(eventDocument, "revision", eventEntity.getRevision());
         appendIfNotNull(eventDocument, "tenantId", eventEntity.getTenantId());
+
+        if (eventEntity instanceof MessageEventSubscriptionEntity) {
+            appendIfNotNull(eventDocument, "eventType", "message");
+        } else if (eventEntity instanceof SignalEventSubscriptionEntity) {
+            appendIfNotNull(eventDocument, "eventType", "signal");
+        } else if (eventEntity instanceof CompensateEventSubscriptionEntity) {
+            appendIfNotNull(eventDocument, "eventType", "compensate");
+        } else if (eventEntity instanceof GenericEventSubscriptionEntity) {
+            appendIfNotNull(eventDocument, "eventType", eventEntity.getEventType());
+        }
         
         return eventDocument;
     }

@@ -110,6 +110,11 @@ public class MongoDbHistoricProcessInstanceDataManager extends AbstractMongoDbDa
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void deleteHistoricProcessInstances(HistoricProcessInstanceQueryImpl historicProcessInstanceQuery) {
+        throw new UnsupportedOperationException();
+    }
+
     protected Bson createFilter(HistoricProcessInstanceQueryImpl processInstanceQuery) {
         List<Bson> andFilters = new ArrayList<>();
         if (processInstanceQuery.getProcessInstanceId() != null) {

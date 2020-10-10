@@ -14,10 +14,10 @@ package org.flowable.mongodb.persistence.manager;
 
 import java.util.List;
 
+import org.flowable.common.engine.impl.persistence.entity.ByteArrayEntity;
+import org.flowable.common.engine.impl.persistence.entity.ByteArrayEntityImpl;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
-import org.flowable.job.service.impl.persistence.entity.JobByteArrayEntity;
-import org.flowable.job.service.impl.persistence.entity.JobByteArrayEntityImpl;
-import org.flowable.job.service.impl.persistence.entity.data.JobByteArrayDataManager;
+import org.flowable.common.engine.impl.persistence.entity.data.ByteArrayDataManager;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
@@ -25,7 +25,7 @@ import com.mongodb.client.model.Filters;
 /**
  * @author Joram Barrez
  */
-public class MongoDbJobByteArrayDataManager extends AbstractMongoDbDataManager<JobByteArrayEntity> implements JobByteArrayDataManager {
+public class MongoDbJobByteArrayDataManager extends AbstractMongoDbDataManager<ByteArrayEntity> implements ByteArrayDataManager {
 
     public static final String COLLECTION_JOB_BYTE_ARRAY = "jobByteArrays";
 
@@ -35,8 +35,8 @@ public class MongoDbJobByteArrayDataManager extends AbstractMongoDbDataManager<J
     }
 
     @Override
-    public JobByteArrayEntity create() {
-        return new JobByteArrayEntityImpl();
+    public ByteArrayEntity create() {
+        return new ByteArrayEntityImpl();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class MongoDbJobByteArrayDataManager extends AbstractMongoDbDataManager<J
     }
 
     @Override
-    public List<JobByteArrayEntity> findAll() {
+    public List<ByteArrayEntity> findAll() {
         throw new UnsupportedOperationException();
     }
 

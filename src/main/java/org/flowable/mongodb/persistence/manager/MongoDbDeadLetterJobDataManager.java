@@ -26,7 +26,7 @@ import com.mongodb.BasicDBObject;
 /**
  * @author Joram Barrez
  */
-public class MongoDeadLetterJobDataManager extends AbstractMongoDbDataManager<DeadLetterJobEntity> implements DeadLetterJobDataManager {
+public class MongoDbDeadLetterJobDataManager extends AbstractMongoDbDataManager<DeadLetterJobEntity> implements DeadLetterJobDataManager {
 
     public static final String COLLECTION_DEADLETTER_JOBS = "deadLetterJobs";
     
@@ -43,6 +43,11 @@ public class MongoDeadLetterJobDataManager extends AbstractMongoDbDataManager<De
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
+    }
+
+    @Override
+    public DeadLetterJobEntity findJobByCorrelationId(String correlationId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

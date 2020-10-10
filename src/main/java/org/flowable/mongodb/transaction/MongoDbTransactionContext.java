@@ -26,6 +26,7 @@ import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandConfig;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
 import org.flowable.common.engine.impl.interceptor.CommandExecutor;
+import org.flowable.engine.impl.util.CommandContextUtil;
 import org.flowable.mongodb.persistence.MongoDbSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,7 +83,7 @@ public class MongoDbTransactionContext implements TransactionContext {
         }
 
         if (executeInNewContext) {
-            CommandExecutor commandExecutor = Context.getCommandContext().getCurrentEngineConfiguration().getCommandExecutor();
+            CommandExecutor commandExecutor = CommandContextUtil.getProcessEngineConfiguration().getCommandExecutor();
             CommandConfig commandConfig = new CommandConfig(false, TransactionPropagation.REQUIRES_NEW);
             commandExecutor.execute(commandConfig, new Command<Void>() {
                 @Override

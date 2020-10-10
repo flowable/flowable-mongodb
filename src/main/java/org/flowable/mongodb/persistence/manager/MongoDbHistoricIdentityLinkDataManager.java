@@ -64,12 +64,32 @@ public class MongoDbHistoricIdentityLinkDataManager extends AbstractMongoDbDataM
     }
 
     @Override
+    public List<HistoricIdentityLinkEntity> findHistoricIdentityLinksBySubScopeIdAndScopeType(String subScopeId, String scopeType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void deleteHistoricIdentityLinksByScopeIdAndType(String scopeId, String scopeType) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public void deleteHistoricIdentityLinksByScopeDefinitionIdAndType(String scopeDefinitionId, String scopeType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricProcessIdentityLinksForNonExistingInstances() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricCaseIdentityLinksForNonExistingInstances() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricTaskIdentityLinksForNonExistingInstances() {
         throw new UnsupportedOperationException();
     }
 

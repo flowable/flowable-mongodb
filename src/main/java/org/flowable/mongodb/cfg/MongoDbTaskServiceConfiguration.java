@@ -22,24 +22,17 @@ import org.flowable.task.service.TaskServiceConfiguration;
  */
 public class MongoDbTaskServiceConfiguration extends TaskServiceConfiguration {
     
-    protected MongoDbSessionFactory mongoDbSessionFactory;
-    
+    public MongoDbTaskServiceConfiguration(String engineName) {
+        super(engineName);
+    }
+
     @Override
     public void initDataManagers() {
         MongoDbTaskDataManager mongoDbTaskDataManager = new MongoDbTaskDataManager();
-        mongoDbSessionFactory.registerDataManager(MongoDbTaskDataManager.COLLECTION_TASKS, mongoDbTaskDataManager);
         this.taskDataManager = mongoDbTaskDataManager;
         
         MongoDbHistoricTaskInstanceDataManager mongoDbHistoricTaskInstanceDataManager = new MongoDbHistoricTaskInstanceDataManager();
-        mongoDbSessionFactory.registerDataManager(MongoDbHistoricTaskInstanceDataManager.COLLECTION_HISTORIC_TASK_INSTANCES, mongoDbHistoricTaskInstanceDataManager);
         this.historicTaskInstanceDataManager = mongoDbHistoricTaskInstanceDataManager;
     }
 
-    public MongoDbSessionFactory getMongoDbSessionFactory() {
-        return mongoDbSessionFactory;
-    }
-
-    public void setMongoDbSessionFactory(MongoDbSessionFactory mongoDbSessionFactory) {
-        this.mongoDbSessionFactory = mongoDbSessionFactory;
-    }
 }

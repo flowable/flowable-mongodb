@@ -96,4 +96,14 @@ public class MongoDbHistoricVariableInstanceDataManager extends AbstractMongoDbD
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void deleteHistoricVariableInstancesForNonExistingProcessInstances() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricVariableInstancesForNonExistingCaseInstances() {
+        throw new UnsupportedOperationException();
+    }
+
 }

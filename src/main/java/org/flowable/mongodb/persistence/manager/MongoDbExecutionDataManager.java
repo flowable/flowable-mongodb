@@ -339,6 +339,11 @@ public class MongoDbExecutionDataManager extends AbstractMongoDbDataManager<Exec
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void updateProcessInstanceLockTime(String processInstanceId, Date lockDate, String lockOwner, Date expirationTime) {
+        throw new UnsupportedOperationException();
+    }
+
     public void updateProcessInstanceLockTime(String processInstanceId, Date lockDate, Date expirationTime) {
         BasicDBObject updateObject = new BasicDBObject();
         updateObject.append("lockTime", lockDate);
@@ -355,6 +360,11 @@ public class MongoDbExecutionDataManager extends AbstractMongoDbDataManager<Exec
         updateObject.append("lockTime", null);
 
         getMongoDbSession().updateImmediately(COLLECTION_EXECUTIONS, Filters.eq("_id", processInstanceId), updateObject);
+    }
+
+    @Override
+    public void clearAllProcessInstanceLockTimes(String lockOwner) {
+        throw new UnsupportedOperationException();
     }
 
     protected boolean isExecutionTreeFetched(final String executionId) {

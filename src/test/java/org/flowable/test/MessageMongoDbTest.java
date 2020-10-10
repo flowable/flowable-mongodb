@@ -15,8 +15,8 @@ package org.flowable.test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.flowable.engine.runtime.EventSubscription;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.eventsubscription.api.EventSubscription;
 import org.flowable.task.api.Task;
 import org.junit.jupiter.api.Test;
 

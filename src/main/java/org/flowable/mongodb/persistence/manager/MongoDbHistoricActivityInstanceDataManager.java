@@ -97,6 +97,16 @@ public class MongoDbHistoricActivityInstanceDataManager extends AbstractMongoDbD
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void deleteHistoricActivityInstances(HistoricActivityInstanceQueryImpl historicActivityInstanceQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricActivityInstancesForNonExistingProcessInstances() {
+        throw new UnsupportedOperationException();
+    }
+
     protected Bson createFilter(HistoricActivityInstanceQueryImpl activityInstanceQuery) {
         List<Bson> filters = new ArrayList<>();
         if (activityInstanceQuery.getExecutionId() != null) {

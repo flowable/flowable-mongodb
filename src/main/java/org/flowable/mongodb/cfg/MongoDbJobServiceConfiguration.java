@@ -13,56 +13,49 @@
 package org.flowable.mongodb.cfg;
 
 import org.flowable.job.service.JobServiceConfiguration;
-import org.flowable.mongodb.persistence.MongoDbSessionFactory;
-import org.flowable.mongodb.persistence.manager.MongoDbJobByteArrayDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbExecutionDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbExternalWorkerJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbTimerJobDataManager;
-import org.flowable.mongodb.persistence.manager.MongoDeadLetterJobDataManager;
-import org.flowable.mongodb.persistence.manager.MongoSuspendedJobDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbDeadLetterJobDataManager;
+import org.flowable.mongodb.persistence.manager.MongoDbSuspendedJobDataManager;
+
+import com.mongodb.Mongo;
 
 /**
  * @author Joram Barrez
  */
 public class MongoDbJobServiceConfiguration extends JobServiceConfiguration {
 
-    protected MongoDbSessionFactory mongoDbSessionFactory;
+    public MongoDbJobServiceConfiguration(String engineName) {
+        super(engineName);
+    }
 
     @Override
     public void initDataManagers() {
         // TODO: other data managers
         if (jobDataManager == null) {
             MongoDbJobDataManager mongoDbJobDataManager = new MongoDbJobDataManager(this);
-            mongoDbSessionFactory.registerDataManager(MongoDbJobDataManager.COLLECTION_JOBS, mongoDbJobDataManager);
-            jobDataManager = mongoDbJobDataManager;
+            this.jobDataManager = mongoDbJobDataManager;
         }
         if (timerJobDataManager == null) {
             MongoDbTimerJobDataManager mongoDbTimerJobDataManager = new MongoDbTimerJobDataManager(this);
-            mongoDbSessionFactory.registerDataManager(MongoDbTimerJobDataManager.COLLECTION_TIMER_JOBS, mongoDbTimerJobDataManager);
-            timerJobDataManager = mongoDbTimerJobDataManager;
+            this.timerJobDataManager = mongoDbTimerJobDataManager;
         }
         if (suspendedJobDataManager == null) {
-            MongoSuspendedJobDataManager mongoSuspendedJobDataManager = new MongoSuspendedJobDataManager();
-            mongoDbSessionFactory.registerDataManager(MongoSuspendedJobDataManager.COLLECTION_SUSPENDED_JOBS, mongoSuspendedJobDataManager);
-            suspendedJobDataManager = mongoSuspendedJobDataManager;
+            MongoDbSuspendedJobDataManager mongoDbSuspendedJobDataManager = new MongoDbSuspendedJobDataManager();
+            this.suspendedJobDataManager = mongoDbSuspendedJobDataManager;
         }
         if (deadLetterJobDataManager == null) {
-            MongoDeadLetterJobDataManager mongoDeadLetterJobDataManager = new MongoDeadLetterJobDataManager();
-            mongoDbSessionFactory.registerDataManager(MongoDeadLetterJobDataManager.COLLECTION_DEADLETTER_JOBS, mongoDeadLetterJobDataManager);
-            deadLetterJobDataManager = mongoDeadLetterJobDataManager;
+            MongoDbDeadLetterJobDataManager mongoDbDeadLetterJobDataManager = new MongoDbDeadLetterJobDataManager();
+            this.deadLetterJobDataManager = mongoDbDeadLetterJobDataManager;
+        }
+        if (externalWorkerJobDataManager == null) {
+            MongoDbExternalWorkerJobDataManager mongoDbExternalWorkerJobDataManager = new MongoDbExternalWorkerJobDataManager();
+            this.externalWorkerJobDataManager = mongoDbExternalWorkerJobDataManager;
         }
 
-        if (jobByteArrayDataManager == null) {
-            MongoDbJobByteArrayDataManager mongoDbJobByteArrayDataManager = new MongoDbJobByteArrayDataManager();
-            mongoDbSessionFactory.registerDataManager(MongoDbJobByteArrayDataManager.COLLECTION_JOB_BYTE_ARRAY, mongoDbJobByteArrayDataManager);
-            jobByteArrayDataManager = mongoDbJobByteArrayDataManager;
-        }
+        // TODO: history
     }
 
-    public MongoDbSessionFactory getMongoDbSessionFactory() {
-        return mongoDbSessionFactory;
-    }
-
-    public void setMongoDbSessionFactory(MongoDbSessionFactory mongoDbSessionFactory) {
-        this.mongoDbSessionFactory = mongoDbSessionFactory;
-    }
 }

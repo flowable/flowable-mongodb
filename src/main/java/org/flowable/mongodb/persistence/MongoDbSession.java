@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.flowable.common.engine.api.FlowableIllegalArgumentException;
 import org.flowable.common.engine.api.FlowableOptimisticLockingException;
 import org.flowable.common.engine.impl.context.Context;
 import org.flowable.common.engine.impl.db.HasRevision;
@@ -34,6 +35,7 @@ import org.flowable.common.engine.impl.persistence.cache.CachedEntityMatcher;
 import org.flowable.common.engine.impl.persistence.cache.EntityCache;
 import org.flowable.common.engine.impl.persistence.entity.AlwaysUpdatedPersistentObject;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
+import org.flowable.engine.impl.util.CommandContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +98,7 @@ public class MongoDbSession implements Session {
     
     public void insertOne(Entity entity) {
         if (entity.getId() == null) {
-            String id = Context.getCommandContext().getCurrentEngineConfiguration().getIdGenerator().getNextId();
+            String id = CommandContextUtil.getProcessEngineConfiguration().getIdGenerator().getNextId();
             entity.setId(id);
         }
         
@@ -133,8 +135,12 @@ public class MongoDbSession implements Session {
         for (Class<? extends Entity> clazz : insertedObjects.keySet()) {
             
             LOGGER.debug("inserting type: {}", clazz);
-            
-            MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(mongoDbSessionFactory.getClassToCollectionsMap().get(clazz));
+
+            String collectionName = mongoDbSessionFactory.getClassToCollectionsMap().get(clazz);
+            if (collectionName == null) {
+                throw new FlowableIllegalArgumentException("Class " + clazz + " is not mapped to a collection");
+            }
+            MongoCollection<Document> mongoDbCollection = getMongoDatabase().getCollection(collectionName);
 
             EntityToDocumentMapper entityMapper = mongoDbSessionFactory.getMapperForEntityClass(clazz);
             Map<String, Entity> entities = insertedObjects.get(clazz);

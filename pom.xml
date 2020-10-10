@@ -7,7 +7,7 @@
     <description>BPM and workflow MongoDB engine</description>
     <groupId>org.flowable</groupId>
     <artifactId>flowable-process-engine-mongodb</artifactId>
-    <version>6.4.0.alpha2-SNAPSHOT</version>
+    <version>6.6.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -19,17 +19,17 @@
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-engine</artifactId>
-            <version>6.4.0</version>
+            <version>6.6.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver</artifactId>
-            <version>3.8.2</version>
+            <version>3.12.7</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
             <artifactId>java-uuid-generator</artifactId>
-            <version>3.1.5</version>
+            <version>3.3.0</version>
         </dependency>
 
         <dependency>
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.1.0</version>
+            <version>5.6.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -129,18 +129,6 @@
 		<name>Flowable</name>
 		<url>http://www.flowable.org</url>
 	</organization>
-	<developers>
-		<developer>
-			<name>Joram Barrez</name>
-			<organization>Flowable</organization>
-			<url>http://www.flowable.org</url>
-		</developer>
-		<developer>
-			<name>Tijs Rademakers</name>
-			<organization>Flowable</organization>
-			<url>http://www.flowable.org</url>
-		</developer>
-	</developers>
 	<issueManagement>
 		<system>Github issues</system>
 		<url>https://github.com/flowable/flowable-mongodb/issues</url>

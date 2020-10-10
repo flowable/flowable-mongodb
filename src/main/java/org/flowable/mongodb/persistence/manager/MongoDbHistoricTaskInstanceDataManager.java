@@ -107,5 +107,20 @@ public class MongoDbHistoricTaskInstanceDataManager extends AbstractMongoDbDataM
     public long findHistoricTaskInstanceCountByNativeQuery(Map<String, Object> parameterMap) {
         throw new UnsupportedOperationException();
     }
-    
+
+    @Override
+    public void deleteHistoricTaskInstances(HistoricTaskInstanceQueryImpl historicTaskInstanceQuery) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricTaskInstancesForNonExistingProcessInstances() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteHistoricTaskInstancesForNonExistingCaseInstances() {
+        throw new UnsupportedOperationException();
+    }
+
 }

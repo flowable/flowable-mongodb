@@ -78,7 +78,7 @@ public class CallActivityAdvancedTest extends AbstractMongoDbTest {
         List<HistoricActivityInstance> historicInstances = historyService.createHistoricActivityInstanceQuery().processInstanceId(taskInSubProcess.getProcessInstanceId()).list();
 
         // Should contain a start-event, the task and an end-event
-        assertEquals(3L, historicInstances.size());
+        assertEquals(5L, historicInstances.size());
         Set<String> expectedActivities = new HashSet<>(Arrays.asList(new String[]{"theStart", "task", "theEnd"}));
 
         for (HistoricActivityInstance act : historicInstances) {

@@ -26,7 +26,7 @@ import com.mongodb.BasicDBObject;
 /**
  * @author Joram Barrez
  */
-public class MongoSuspendedJobDataManager extends AbstractMongoDbDataManager<SuspendedJobEntity> implements SuspendedJobDataManager {
+public class MongoDbSuspendedJobDataManager extends AbstractMongoDbDataManager<SuspendedJobEntity> implements SuspendedJobDataManager {
 
     public static final String COLLECTION_SUSPENDED_JOBS = "suspendedJobs";
     
@@ -43,6 +43,11 @@ public class MongoSuspendedJobDataManager extends AbstractMongoDbDataManager<Sus
     @Override
     public BasicDBObject createUpdateObject(Entity entity) {
         return null;
+    }
+
+    @Override
+    public SuspendedJobEntity findJobByCorrelationId(String correlationId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

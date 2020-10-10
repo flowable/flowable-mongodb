@@ -65,6 +65,11 @@ public class MongoDbIdentityLinkDataManager extends AbstractMongoDbDataManager<I
     }
 
     @Override
+    public List<IdentityLinkEntity> findIdentityLinksBySubScopeIdAndType(String subScopeId, String scopeType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public List<IdentityLinkEntity> findIdentityLinksByScopeDefinitionIdAndType(String scopeDefinitionId, String scopeType) {
         throw new UnsupportedOperationException();
     }
@@ -118,6 +123,11 @@ public class MongoDbIdentityLinkDataManager extends AbstractMongoDbDataManager<I
 
     @Override
     public void deleteIdentityLinksByScopeIdAndScopeType(String scopeId, String scopeType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteIdentityLinksByScopeDefinitionIdAndScopeType(String scopeDefinitionId, String scopeType) {
         throw new UnsupportedOperationException();
     }
 

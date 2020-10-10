@@ -22,12 +22,12 @@ import java.util.List;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
 import org.flowable.engine.history.HistoricActivityInstance;
-import org.flowable.engine.impl.EventSubscriptionQueryImpl;
 import org.flowable.engine.impl.test.JobTestHelper;
 import org.flowable.engine.impl.util.CommandContextUtil;
 import org.flowable.engine.repository.ProcessDefinition;
-import org.flowable.engine.runtime.EventSubscription;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.eventsubscription.api.EventSubscription;
+import org.flowable.eventsubscription.service.impl.EventSubscriptionQueryImpl;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.junit.jupiter.api.Test;
@@ -173,7 +173,7 @@ public class ParallelGatewayTest extends AbstractMongoDbTest {
         runtimeService.startProcessInstanceByKey("nestedForkJoin");
 
         List<HistoricActivityInstance> historicActivityInstances = historyService.createHistoricActivityInstanceQuery().list();
-        assertEquals(21, historicActivityInstances.size());
+        assertEquals(41, historicActivityInstances.size());
         for (HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
             assertNotNull(historicActivityInstance.getStartTime());
             assertNotNull(historicActivityInstance.getEndTime());
@@ -202,10 +202,12 @@ public class ParallelGatewayTest extends AbstractMongoDbTest {
         String executionId = processEngine.getManagementService().executeCommand(new Command<String>() {
             @Override
             public String execute(CommandContext commandContext) {
-                EventSubscriptionQueryImpl q = new EventSubscriptionQueryImpl(commandContext);
+                EventSubscriptionQueryImpl q = new EventSubscriptionQueryImpl(commandContext, processEngineConfiguration.getEventSubscriptionServiceConfiguration());
                 q.processInstanceId(processInstance.getProcessInstanceId());
 
                 List<EventSubscription> subs = CommandContextUtil
+                        .getProcessEngineConfiguration()
+                        .getEventSubscriptionServiceConfiguration()
                         .getEventSubscriptionEntityManager()
                         .findEventSubscriptionsByQueryCriteria(q);
 
@@ -232,10 +234,12 @@ public class ParallelGatewayTest extends AbstractMongoDbTest {
         executionId = processEngine.getManagementService().executeCommand(new Command<String>() {
             @Override
             public String execute(CommandContext commandContext) {
-                EventSubscriptionQueryImpl q = new EventSubscriptionQueryImpl(commandContext);
+                EventSubscriptionQueryImpl q = new EventSubscriptionQueryImpl(commandContext, processEngineConfiguration.getEventSubscriptionServiceConfiguration());
                 q.processInstanceId(processInstance.getProcessInstanceId());
 
                 List<EventSubscription> subs = CommandContextUtil
+                        .getProcessEngineConfiguration()
+                        .getEventSubscriptionServiceConfiguration()
                         .getEventSubscriptionEntityManager()
                         .findEventSubscriptionsByQueryCriteria(q);
 

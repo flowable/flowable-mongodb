@@ -22,25 +22,18 @@ import org.flowable.variable.service.VariableServiceConfiguration;
  */
 public class MongoDbVariableServiceConfiguration extends VariableServiceConfiguration {
     
-    protected MongoDbSessionFactory mongoDbSessionFactory;
-    
+    public MongoDbVariableServiceConfiguration(String engineName) {
+        super(engineName);
+    }
+
     @Override
     public void initDataManagers() {
         MongoDbVariableInstanceDataManager mongoDbVariableInstanceDataManager = new MongoDbVariableInstanceDataManager();
-        mongoDbSessionFactory.registerDataManager(MongoDbVariableInstanceDataManager.COLLECTION_VARIABLES, mongoDbVariableInstanceDataManager);
         this.variableInstanceDataManager = mongoDbVariableInstanceDataManager;
         
         MongoDbHistoricVariableInstanceDataManager mongoDbHistoricVariableInstanceDataManager = new MongoDbHistoricVariableInstanceDataManager();
-        mongoDbSessionFactory.registerDataManager(MongoDbHistoricVariableInstanceDataManager.COLLECTION_HISTORIC_VARIABLE_INSTANCES, mongoDbHistoricVariableInstanceDataManager);
         this.historicVariableInstanceDataManager = mongoDbHistoricVariableInstanceDataManager;
         
     }
 
-    public MongoDbSessionFactory getMongoDbSessionFactory() {
-        return mongoDbSessionFactory;
-    }
-
-    public void setMongoDbSessionFactory(MongoDbSessionFactory mongoDbSessionFactory) {
-        this.mongoDbSessionFactory = mongoDbSessionFactory;
-    }
 }

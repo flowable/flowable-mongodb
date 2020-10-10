@@ -18,16 +18,19 @@ import java.util.List;
 
 import org.bson.conversions.Bson;
 import org.flowable.common.engine.impl.persistence.entity.Entity;
-import org.flowable.engine.impl.EventSubscriptionQueryImpl;
-import org.flowable.engine.impl.persistence.entity.CompensateEventSubscriptionEntity;
-import org.flowable.engine.impl.persistence.entity.CompensateEventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.EventSubscriptionEntity;
-import org.flowable.engine.impl.persistence.entity.MessageEventSubscriptionEntity;
-import org.flowable.engine.impl.persistence.entity.MessageEventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntity;
-import org.flowable.engine.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
-import org.flowable.engine.impl.persistence.entity.data.EventSubscriptionDataManager;
-import org.flowable.engine.runtime.EventSubscription;
+import org.flowable.eventsubscription.api.EventSubscription;
+import org.flowable.eventsubscription.service.impl.EventSubscriptionQueryImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.CompensateEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.CompensateEventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.EventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.GenericEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.GenericEventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.MessageEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.MessageEventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.SignalEventSubscriptionEntity;
+import org.flowable.eventsubscription.service.impl.persistence.entity.SignalEventSubscriptionEntityImpl;
+import org.flowable.eventsubscription.service.impl.persistence.entity.data.EventSubscriptionDataManager;
+import org.flowable.mongodb.cfg.MongoDbEventSubscriptionServiceConfiguration;
 import org.flowable.mongodb.cfg.MongoDbProcessEngineConfiguration;
 
 import com.mongodb.BasicDBObject;
@@ -39,10 +42,6 @@ import com.mongodb.client.model.Filters;
 public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataManager<EventSubscriptionEntity> implements EventSubscriptionDataManager {
 
     public static final String COLLECTION_EVENT_SUBSCRIPTION = "eventSubscriptions";
-
-    public MongoDbEventSubscriptionDataManager(MongoDbProcessEngineConfiguration processEngineConfiguration) {
-        super(processEngineConfiguration);
-    }
 
     @Override
     public String getCollection() {
@@ -67,6 +66,11 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
     @Override
     public CompensateEventSubscriptionEntity createCompensateEventSubscription() {
         return new CompensateEventSubscriptionEntityImpl();
+    }
+
+    @Override
+    public GenericEventSubscriptionEntity createGenericEventSubscriptionEntity() {
+        return new GenericEventSubscriptionEntityImpl();
     }
 
     @Override
@@ -163,6 +167,26 @@ public class MongoDbEventSubscriptionDataManager extends AbstractMongoDbDataMana
 
     @Override
     public MessageEventSubscriptionEntity findMessageStartEventSubscriptionByName(String messageName, String tenantId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<SignalEventSubscriptionEntity> findSignalEventSubscriptionsByScopeAndEventName(String scopeId, String scopeType, String eventName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<EventSubscriptionEntity> findEventSubscriptionsBySubScopeId(String subScopeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteEventSubscriptionsForScopeIdAndType(String scopeId, String scopeType) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void deleteEventSubscriptionsForScopeDefinitionIdAndType(String scopeDefinitionId, String scopeType) {
         throw new UnsupportedOperationException();
     }
 

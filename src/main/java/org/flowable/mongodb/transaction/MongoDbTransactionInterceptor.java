@@ -18,6 +18,7 @@ import org.flowable.common.engine.impl.interceptor.AbstractCommandInterceptor;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandConfig;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
+import org.flowable.common.engine.impl.interceptor.CommandExecutor;
 import org.flowable.mongodb.persistence.MongoDbSession;
 
 import com.mongodb.MongoClient;
@@ -26,15 +27,16 @@ import com.mongodb.MongoClient;
  * @author Joram Barrez
  */
 public class MongoDbTransactionInterceptor extends AbstractCommandInterceptor {
-    
+
     protected MongoClient mongoClient;
-    
+
     public MongoDbTransactionInterceptor(MongoClient mongoClient) {
         this.mongoClient = mongoClient;
     }
 
-    public <T> T execute(CommandConfig config, Command<T> command) {
-        
+    @Override
+    public <T> T execute(CommandConfig config, Command<T> command, CommandExecutor commandExecutor) {
+
         // TODO session reuse when nested
         
         CommandContext commandContext = Context.getCommandContext();
@@ -44,7 +46,7 @@ public class MongoDbTransactionInterceptor extends AbstractCommandInterceptor {
         
         MongoDbSession mongoDbSession = commandContext.getSession(MongoDbSession.class);
         mongoDbSession.startTransaction();
-        return next.execute(config, command);
+        return next.execute(config, command, commandExecutor);
         
     }
 

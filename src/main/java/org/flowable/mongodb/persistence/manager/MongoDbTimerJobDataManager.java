@@ -65,23 +65,10 @@ public class MongoDbTimerJobDataManager extends AbstractMongoDbDataManager<Timer
         return updateObject;
     }
 
+
     @Override
-    public List<TimerJobEntity> findTimerJobsToExecute(Page page) {
-        Bson filter = null;
-        List<Bson> filterParts = new ArrayList<>();
-        if (jobServiceConfiguration.getJobExecutionScope() == null) {
-            filterParts.add(Filters.eq("scopeType", null));
-
-        } else if (!jobServiceConfiguration.getJobExecutionScope().equals("all")){
-            filterParts.add(Filters.eq("scopeType", jobServiceConfiguration.getJobExecutionScope()));
-        }
-
-        filterParts.add(Filters.lte("duedate", jobServiceConfiguration.getClock().getCurrentTime()));
-        filterParts.add(Filters.eq("lockOwner", null));
-
-        filter = Filters.and(filterParts);
-
-        return getMongoDbSession().find(COLLECTION_TIMER_JOBS, filter, null, 1);
+    public TimerJobEntity findJobByCorrelationId(String correlationId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -100,6 +87,30 @@ public class MongoDbTimerJobDataManager extends AbstractMongoDbDataManager<Timer
     }
 
     @Override
+    public List<TimerJobEntity> findJobsByScopeIdAndSubScopeId(String scopeId, String subScopeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<TimerJobEntity> findJobsToExecute(List<String> enabledCategories, Page page) {
+        Bson filter = null;
+        List<Bson> filterParts = new ArrayList<>();
+        if (jobServiceConfiguration.getJobExecutionScope() == null) {
+            filterParts.add(Filters.eq("scopeType", null));
+
+        } else if (!jobServiceConfiguration.getJobExecutionScope().equals("all")){
+            filterParts.add(Filters.eq("scopeType", jobServiceConfiguration.getJobExecutionScope()));
+        }
+
+        filterParts.add(Filters.lte("duedate", jobServiceConfiguration.getClock().getCurrentTime()));
+        filterParts.add(Filters.eq("lockOwner", null));
+
+        filter = Filters.and(filterParts);
+
+        return getMongoDbSession().find(COLLECTION_TIMER_JOBS, filter, null, 1);
+    }
+
+    @Override
     public List<TimerJobEntity> findJobsByExecutionId(String executionId) {
         Bson filter = Filters.eq("executionId", executionId);
         return getMongoDbSession().find(COLLECTION_TIMER_JOBS, filter);
@@ -109,6 +120,11 @@ public class MongoDbTimerJobDataManager extends AbstractMongoDbDataManager<Timer
     public List<TimerJobEntity> findJobsByProcessInstanceId(String processInstanceId) {
         Bson filter = Filters.eq("processInstanceId", processInstanceId);
         return getMongoDbSession().find(COLLECTION_TIMER_JOBS, filter);
+    }
+
+    @Override
+    public List<TimerJobEntity> findExpiredJobs(List<String> enabledCategories, Page page) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -192,6 +208,11 @@ public class MongoDbTimerJobDataManager extends AbstractMongoDbDataManager<Timer
 
     @Override
     public void updateJobTenantIdForDeployment(String deploymentId, String newTenantId) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void resetExpiredJob(String jobId) {
         throw new UnsupportedOperationException();
     }
 
