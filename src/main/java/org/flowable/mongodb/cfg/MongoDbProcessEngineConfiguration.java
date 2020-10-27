@@ -53,6 +53,7 @@ import org.flowable.mongodb.persistence.manager.MongoDbDeadLetterJobDataManager;
 import org.flowable.mongodb.persistence.manager.MongoDbSuspendedJobDataManager;
 import org.flowable.mongodb.schema.MongoProcessSchemaManager;
 import org.flowable.mongodb.transaction.MongoDbTransactionContextFactory;
+import org.flowable.mongodb.transaction.MongoDbTransactionInterceptor;
 import org.flowable.task.service.TaskServiceConfiguration;
 import org.flowable.variable.service.VariableServiceConfiguration;
 
@@ -160,7 +161,7 @@ public class MongoDbProcessEngineConfiguration extends ProcessEngineConfiguratio
     @Override
     public CommandInterceptor createTransactionInterceptor() {
         return null;
-//        return new MongoDbTransactionInterceptor(mongoClient);
+//        return new MongoDbTransactionInterceptor(mongoClient); --> commented out, transaction is started in MongoDbSession
     }
 
     @Override
